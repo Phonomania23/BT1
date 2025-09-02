@@ -1,0 +1,782 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ЛК блогера — Bloggers.tools</title>
+
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/css/base.css" as="style">
+  <link rel="preload" href="/css/layout.css" as="style">
+  <link rel="preload" href="/js/include.js" as="script">
+
+  <!-- Preconnect to external domains -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- DNS-prefetch для внешних ресурсов -->
+  <link rel="dns-prefetch" href="https://api.example.com">
+
+  <!-- Установите цвет темы -->
+  <meta name="theme-color" content="#1a1d21">
+
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <!-- Content Feed styles -->
+  <link rel="stylesheet" href="../css/content-feed.css" />
+
+  <script defer src="../js/include.js"></script>
+  <script defer src="../js/blogger.js"></script>
+  <!-- Content Feed logic -->
+  <script defer src="../js/content-feed.js"></script>
+
+  <style>
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 20px 0 30px;
+      border-bottom: 1px solid var(--surface-border);
+      margin-bottom: 30px;
+    }
+    .page-header h1 {
+      margin: 0;
+      color: var(--text);
+      font-size: 2.2em;
+    }
+
+    .grid {
+      display: grid;
+      gap: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    }
+
+    .card {
+      padding: 24px;
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow-2);
+      transition: var(--transition);
+    }
+    .card:hover {
+      box-shadow: var(--shadow-1);
+      transform: translateY(-2px);
+    }
+
+    .card h2 {
+      margin: 0 0 16px 0;
+      color: var(--text);
+      font-size: 1.5em;
+      font-weight: 700;
+    }
+
+    .subgrid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .deal {
+      padding: 18px;
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: var(--transition);
+    }
+    .deal:hover {
+      border-color: var(--accent);
+      transform: translateX(3px);
+    }
+
+    .deal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .deal-title {
+      color: var(--text);
+      font-weight: 600;
+      margin: 0;
+      font-size: 1.1em;
+    }
+
+    .deal-status {
+      font-size: 0.85em;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 12px;
+      white-space: nowrap;
+    }
+
+    .status-in-progress {
+      background: rgba(199, 255, 26, 0.15);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+    .status-awaiting {
+      background: rgba(155, 81, 255, 0.15);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    .status-completed {
+      background: rgba(76, 175, 80, 0.15);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+    .status-rejected {
+      background: rgba(244, 67, 54, 0.15);
+      color: var(--error);
+      border: 1px solid var(--error);
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(97, 209, 255, 0.15);
+      color: var(--link);
+      font-size: 0.85rem;
+      font-weight: 600;
+      border: 1px solid rgba(97, 209, 255, 0.3);
+    }
+
+    .meta {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .deal-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .btn-ghost {
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--surface-border);
+      background: transparent;
+      color: var(--text);
+      font-size: 0.9em;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(155, 81, 255, 0.1);
+    }
+
+    .cols {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: 1fr;
+    }
+    .cols > div {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    canvas {
+      width: 100%;
+      height: 240px;
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-sm);
+      background: var(--surface-2);
+    }
+
+    .chart-container { position: relative; }
+    .chart-title {
+      color: var(--text);
+      font-weight: 600;
+      margin-bottom: 10px;
+      font-size: 1.1em;
+    }
+
+    .chat-controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    select {
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--surface-border);
+      background: var(--surface-2);
+      color: var(--text);
+      font-size: 1em;
+      transition: var(--transition);
+    }
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: var(--focus);
+    }
+
+    .empty {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 30px;
+      text-align: center;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      border: 1px dashed var(--surface-border);
+    }
+
+    .stats-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 15px;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--surface-border);
+      transition: var(--transition);
+    }
+    .stat-item:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-2);
+    }
+
+    .stat-value {
+      font-size: 2em;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+    .stat-label { color: var(--text); font-size: 0.9em; }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .action-card {
+      padding: 20px;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--surface-border);
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+    .action-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      background: var(--surface-3);
+    }
+
+    .action-icon {
+      font-size: 2em;
+      margin-bottom: 10px;
+      display: block;
+    }
+    .action-title { color: var(--text); font-weight: 600; margin: 0 0 8px 0; }
+    .action-desc { color: var(--text-muted); font-size: 0.9em; margin: 0; }
+
+    .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: var(--error);
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7em;
+      font-weight: bold;
+    }
+
+    .subgrid-title { margin: 0 0 15px 0; color: var(--text); }
+
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn:disabled:hover { background-color: var(--primary); border-color: var(--primary); transform: none; }
+
+    .chart-hover-info {
+      position: absolute;
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9em;
+      color: var(--text);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 10;
+      box-shadow: var(--shadow-2);
+    }
+
+    .chart-bar { transition: var(--transition); cursor: pointer; }
+    .chart-bar:hover { opacity: 0.8; transform: scale(1.05); }
+
+    @media (min-width: 768px) { .cols { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 768px) {
+      .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+      .grid { grid-template-columns: 1fr; }
+      .chat-controls { flex-direction: column; align-items: flex-start; }
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.5s ease; }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--surface-2); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--surface-border); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+  </style>
+</head>
+<body>
+  <div data-include="../components/header.html"></div>
+  <div data-include="../components/nav.html"></div>
+
+  <main class="container">
+    <div class="page-header">
+      <h1>Блогер: <span id="bloggerName">Demo Blogger</span></h1>
+      <button id="logoutBlogger" class="btn btn-secondary" type="button">Выйти</button>
+    </div>
+
+    <!-- Общая статистика -->
+    <div class="stats-overview">
+      <div class="stat-item fade-in">
+        <div class="stat-value">12</div>
+        <div class="stat-label">Активных проектов</div>
+      </div>
+      <div class="stat-item fade-in">
+        <div class="stat-value">94%</div>
+        <div class="stat-label">Успешных сделок</div>
+      </div>
+      <div class="stat-item fade-in">
+        <div class="stat-value">4.8</div>
+        <div class="stat-label">Средний рейтинг</div>
+      </div>
+      <div class="stat-item fade-in">
+        <div class="stat-value">24ч</div>
+        <div class="stat-label">Средний ответ</div>
+      </div>
+    </div>
+
+    <section class="grid">
+      <!-- Текущие проекты -->
+      <article class="card" aria-labelledby="projects-title">
+        <h2 id="projects-title">📋 Текущие проекты</h2>
+        <div class="cols">
+          <div>
+            <h3 class="subgrid-title">В работе</h3>
+            <div id="inProgress" class="subgrid" aria-live="polite" aria-busy="true">
+              <div class="deal fade-in">
+                <div class="deal-header">
+                  <h4 class="deal-title">TechBrand - Обзор смартфона</h4>
+                  <span class="deal-status status-in-progress">В работе</span>
+                </div>
+                <p class="meta">Срок: до 15.09.2024 · Бюджет: $1,200</p>
+                <div class="row">
+                  <span class="badge">YouTube</span>
+                  <span class="meta">3 дня осталось</span>
+                </div>
+                <div class="deal-actions">
+                  <button class="btn-ghost">📁 Материалы</button>
+                  <button class="btn-ghost">💬 Чат</button>
+                  <button class="btn-ghost">📤 Сдать работу</button>
+                </div>
+              </div>
+
+              <div class="deal fade-in">
+                <div class="deal-header">
+                  <h4 class="deal-title">FashionStore - Коллекция</h4>
+                  <span class="deal-status status-in-progress">В работе</span>
+                </div>
+                <p class="meta">Срок: до 20.09.2024 · Бюджет: $800</p>
+                <div class="row">
+                  <span class="badge">Instagram</span>
+                  <span class="meta">8 дней осталось</span>
+                </div>
+                <div class="deal-actions">
+                  <button class="btn-ghost">📁 Материалы</button>
+                  <button class="btn-ghost">💬 Чат</button>
+                  <button class="btn-ghost">📤 Сдать работу</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Блок "На проверке" -->
+        <div style="margin-top: 25px;">
+          <h3 class="subgrid-title">На проверке</h3>
+          <div id="awaiting" class="subgrid" aria-live="polite" aria-busy="true">
+            <div class="deal fade-in">
+              <div class="deal-header">
+                <h4 class="deal-title">GameStudio - Анонс игры</h4>
+                <span class="deal-status status-awaiting">На проверке</span>
+              </div>
+              <p class="meta">Сдано: 10.09.2024 · Бюджет: $1,500</p>
+              <div class="row">
+                <span class="badge">YouTube</span>
+                <span class="meta">Ожидает одобрения</span>
+              </div>
+              <div class="deal-actions">
+                <button class="btn-ghost">👀 Предпросмотр</button>
+                <button class="btn-ghost">💬 Чат</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Статистика -->
+      <article class="card" aria-labelledby="stats-title">
+        <h2 id="stats-title">📊 Статистика</h2>
+        <p class="meta">Динамика показателей за последние 30 дней</p>
+        <div class="subgrid">
+          <div class="chart-container">
+            <div class="chart-title">👥 Аудитория</div>
+            <canvas id="audChart" width="640" height="240" aria-label="График роста аудитории" role="img"></canvas>
+            <div class="chart-hover-info" id="audHoverInfo"></div>
+          </div>
+          <div class="chart-container">
+            <div class="chart-title">👀 Просмотры</div>
+            <canvas id="viewsChart" width="640" height="240" aria-label="График просмотров" role="img"></canvas>
+            <div class="chart-hover-info" id="viewsHoverInfo"></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Контент блогера -->
+      <article class="card" id="content-section" aria-labelledby="content-title">
+        <h2 id="content-title">📚 Контент</h2>
+        <!-- Контейнер, в который монтируется лента -->
+        <div id="contentFeed" class="content-feed-root" aria-live="polite"></div>
+      </article>
+
+      <!-- Чат и быстрые действия -->
+      <article class="card" aria-labelledby="chat-title">
+        <h2 id="chat-title">💬 Чат</h2>
+        <div class="chat-controls">
+          <label for="chatDealSelect" class="meta">Выберите проект:</label>
+          <select id="chatDealSelect">
+            <option value="">-- Выберите проект --</option>
+            <option value="1">TechBrand - Обзор смартфона</option>
+            <option value="2">FashionStore - Коллекция</option>
+            <option value="3">GameStudio - Анонс игры</option>
+          </select>
+          <button id="openChatBtn" class="btn" type="button" disabled>Открыть переписку</button>
+        </div>
+        <p class="meta">Или откройте детали проекта и перейдите на вкладку «Чат».</p>
+
+        <div class="quick-actions">
+          <div class="action-card" onclick="location.href='#notifications'">
+            <span class="action-icon">🔔</span>
+            <div class="notification-badge">3</div>
+            <div class="action-title">Уведомления</div>
+            <div class="action-desc">Новые сообщения</div>
+          </div>
+          <div class="action-card" onclick="location.href='#profile'">
+            <span class="action-icon">👤</span>
+            <div class="action-title">Профиль</div>
+            <div class="action-desc">Редактировать данные</div>
+          </div>
+          <div class="action-card" onclick="location.href='#finance'">
+            <span class="action-icon">💰</span>
+            <div class="action-title">Финансы</div>
+            <div class="action-desc">Баланс: $2,300</div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Завершенные проекты -->
+    <article class="card" style="margin-top: 30px;">
+      <h2>✅ Завершенные проекты</h2>
+      <div class="subgrid">
+        <div class="deal fade-in">
+          <div class="deal-header">
+            <h4 class="deal-title">CosmeticBrand - Обзор продукции</h4>
+            <span class="deal-status status-completed">Завершен</span>
+          </div>
+          <p class="meta">Завершен: 05.09.2024 · Получено: $950</p>
+          <div class="row">
+            <span class="badge">Instagram</span>
+            <span class="meta">⭐ 4.8/5</span>
+          </div>
+        </div>
+
+        <div class="deal fade-in">
+          <div class="deal-header">
+            <h4 class="deal-title">TravelAgency - Тур по Бали</h4>
+            <span class="deal-status status-completed">Завершен</span>
+          </div>
+          <p class="meta">Завершен: 28.08.2024 · Получено: $1,200</p>
+          <div class="row">
+            <span class="badge">YouTube</span>
+            <span class="meta">⭐ 5.0/5</span>
+          </div>
+        </div>
+
+        <div class="deal fade-in">
+          <div class="deal-header">
+            <h4 class="deal-title">FoodDelivery - Сервис доставки</h4>
+            <span class="deal-status status-rejected">Отклонен</span>
+          </div>
+          <p class="meta">Завершен: 15.08.2024 · Причина: несоответствие</p>
+          <div class="row">
+            <span class="badge">TikTok</span>
+            <span class="meta">Требует доработки</span>
+          </div>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <div data-include="../components/footer.html"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Загрузка имени блогера
+      const bloggerName = localStorage.getItem('bloggerName') || 'Demo Blogger';
+      document.getElementById('bloggerName').textContent = bloggerName;
+
+      // Обработчик выхода
+      document.getElementById('logoutBlogger').addEventListener('click', function() {
+        if (confirm('Вы уверены, что хотите выйти?')) {
+          localStorage.removeItem('bloggerName');
+          localStorage.removeItem('userRole');
+          localStorage.removeItem('bloggerData');
+          window.location.href = '../index.html';
+        }
+      });
+
+      // Элементы для управления чатом
+      const dealSelect = document.getElementById('chatDealSelect');
+      const openChatBtn = document.getElementById('openChatBtn');
+
+      function updateChatButtonState() {
+        openChatBtn.disabled = !dealSelect.value;
+      }
+      if (dealSelect && openChatBtn) {
+        dealSelect.addEventListener('change', updateChatButtonState);
+        updateChatButtonState();
+      }
+      if (openChatBtn) {
+        openChatBtn.addEventListener('click', function() {
+          const selectedDeal = dealSelect.value;
+          if (!selectedDeal) {
+            showNotification('Пожалуйста, выберите проект для переписки', 'error');
+            return;
+          }
+          showNotification('Чат открыт для выбранного проекта: ' + dealSelect.options[dealSelect.selectedIndex].text);
+        });
+      }
+
+      // Имитация загрузки данных
+      setTimeout(() => {
+        const inProgress = document.getElementById('inProgress');
+        const awaiting = document.getElementById('awaiting');
+        if (inProgress) inProgress.setAttribute('aria-busy', 'false');
+        if (awaiting) awaiting.setAttribute('aria-busy', 'false');
+        initChartsWithHover();
+      }, 1000);
+
+      function initChartsWithHover() {
+        const audCanvas = document.getElementById('audChart');
+        const viewsCanvas = document.getElementById('viewsChart');
+        const audHoverInfo = document.getElementById('audHoverInfo');
+        const viewsHoverInfo = document.getElementById('viewsHoverInfo');
+
+        if (audCanvas && viewsCanvas) {
+          createSimpleChart(audCanvas, [125, 134, 128, 142, 138, 156, 162], 'Подписчики', audHoverInfo);
+          createSimpleChart(viewsCanvas, [45000, 48000, 52000, 49000, 51000, 58000, 62000], 'Просмотры', viewsHoverInfo);
+        }
+      }
+
+      function createSimpleChart(canvas, data, label, hoverInfo) {
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        const padding = 40;
+        const maxValue = Math.max(...data) * 1.1;
+
+        ctx.clearRect(0, 0, width, height);
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.lineWidth = 1;
+
+        for (let i = 0; i <= 5; i++) {
+          const y = padding + (height - padding * 2) * (1 - i / 5);
+          ctx.beginPath();
+          ctx.moveTo(padding, y);
+          ctx.lineTo(width - padding, y);
+          ctx.stroke();
+        }
+
+        let progress = 0;
+        const animate = () => {
+          progress += 0.02;
+          if (progress > 1) progress = 1;
+
+          ctx.clearRect(0, 0, width, height);
+
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+          for (let i = 0; i <= 5; i++) {
+            const y = padding + (height - padding * 2) * (1 - i / 5);
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(width - padding, y);
+            ctx.stroke();
+          }
+
+          ctx.strokeStyle = 'var(--primary)';
+          ctx.fillStyle = 'rgba(199, 255, 26, 0.2)';
+          ctx.lineWidth = 3;
+
+          ctx.beginPath();
+          const barWidth = (width - padding * 2) / data.length;
+
+          for (let i = 0; i < data.length; i++) {
+            const x = padding + i * barWidth + barWidth / 2;
+            const y = height - padding - (data[i] / maxValue) * (height - padding * 2) * progress;
+
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+
+          for (let i = 0; i < data.length; i++) {
+            const x = padding + i * barWidth + barWidth / 2;
+            const y = height - padding - (data[i] / maxValue) * (height - padding * 2) * progress;
+
+            ctx.beginPath();
+            ctx.arc(x, y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = 'var(--primary)';
+            ctx.fill();
+            ctx.strokeStyle = 'var(--surface)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+          }
+
+          canvas.onmousemove = (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const barWidth = (width - padding * 2) / data.length;
+
+            for (let i = 0; i < data.length; i++) {
+              const barX = padding + i * barWidth;
+              if (x >= barX && x <= barX + barWidth) {
+                const value = data[i];
+                hoverInfo.textContent = `${label}: ${value.toLocaleString()}`;
+                hoverInfo.style.left = (barX + barWidth / 2) + 'px';
+                hoverInfo.style.top = (height - padding - (value / maxValue) * (height - padding * 2) - 30) + 'px';
+                hoverInfo.style.opacity = '1';
+                return;
+              }
+            }
+            hoverInfo.style.opacity = '0';
+          };
+          canvas.onmouseleave = () => { hoverInfo.style.opacity = '0'; };
+
+          if (progress < 1) requestAnimationFrame(animate);
+        };
+        animate();
+      }
+
+      function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.textContent = message;
+        notification.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          padding: 12px 20px;
+          border-radius: var(--radius);
+          color: white;
+          font-weight: 600;
+          z-index: 1000;
+          box-shadow: var(--shadow-3);
+          animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+        `;
+        if (type === 'success') notification.style.background = 'var(--success)';
+        else if (type === 'error') notification.style.background = 'var(--error)';
+        else if (type === 'info') notification.style.background = 'var(--info)';
+
+        document.body.appendChild(notification);
+        setTimeout(() => { notification.parentNode && notification.parentNode.removeChild(notification); }, 3000);
+      }
+
+      function loadBloggerData() {
+        const savedData = localStorage.getItem('bloggerData');
+        if (savedData) {
+          const data = JSON.parse(savedData);
+          document.getElementById('bloggerName').textContent = data.name || 'Demo Blogger';
+        }
+      }
+
+      // === МОНТИРОВАНИЕ ЛЕНТЫ КОНТЕНТА ===
+      (function mountContentFeed() {
+        const el = document.getElementById('contentFeed');
+        if (!el || !window.ContentFeed) return;
+
+        // Пытаемся понять, какой профиль загружаем
+        const urlParams = new URLSearchParams(window.location.search);
+        const idFromQuery = urlParams.get('id');
+
+        let opts = { dataUrl: '../json/bloggers.json' };
+
+        // Из localStorage
+        const savedData = localStorage.getItem('bloggerData');
+        if (savedData) {
+          try {
+            const data = JSON.parse(savedData);
+            if (data && data.id) opts.bloggerId = data.id;
+            else if (data && data.username) opts.username = data.username;
+          } catch(e) {}
+        }
+        // Из URL-параметра
+        if (idFromQuery && !opts.bloggerId) opts.bloggerId = idFromQuery;
+
+        // Монтируем
+        try {
+          window.ContentFeed.mount('#contentFeed', opts);
+        } catch (e) {
+          console.error('ContentFeed mount error:', e);
+          el.innerHTML = '<div class="empty">Не удалось загрузить контент. Попробуйте обновить страницу.</div>';
+        }
+      })();
+
+      // Инициализация
+      loadBloggerData();
+    });
+  </script>
+</body>
+</html>
