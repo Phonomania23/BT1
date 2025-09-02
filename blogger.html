@@ -20,15 +20,15 @@
   <!-- Установите цвет темы -->
   <meta name="theme-color" content="#1a1d21">
 
-  <link rel="stylesheet" href="../css/base.css" />
-  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="/css/base.css" />
+  <link rel="stylesheet" href="/css/layout.css" />
   <!-- Content Feed styles -->
-  <link rel="stylesheet" href="../css/content-feed.css" />
+  <link rel="stylesheet" href="/css/content-feed.css" />
 
-  <script defer src="../js/include.js"></script>
-  <script defer src="../js/blogger.js"></script>
+  <script defer src="/js/include.js"></script>
+  <script defer src="/js/blogger.js"></script>
   <!-- Content Feed logic -->
-  <script defer src="../js/content-feed.js"></script>
+  <script defer src="/js/content-feed.js"></script>
 
   <style>
     .page-header {
@@ -44,38 +44,6 @@
       margin: 0;
       color: var(--text);
       font-size: 2.2em;
-    }
-
-    .grid {
-      display: grid;
-      gap: 24px;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    }
-
-    .card {
-      padding: 24px;
-      border: 1px solid var(--surface-border);
-      border-radius: var(--radius);
-      background: var(--surface);
-      box-shadow: var(--shadow-2);
-      transition: var(--transition);
-    }
-    .card:hover {
-      box-shadow: var(--shadow-1);
-      transform: translateY(-2px);
-    }
-
-    .card h2 {
-      margin: 0 0 16px 0;
-      color: var(--text);
-      font-size: 1.5em;
-      font-weight: 700;
-    }
-
-    .subgrid {
-      display: grid;
-      gap: 16px;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     }
 
     .deal {
@@ -136,13 +104,6 @@
       border: 1px solid var(--error);
     }
 
-    .row {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
     .badge {
       display: inline-block;
       padding: 4px 10px;
@@ -152,13 +113,6 @@
       font-size: 0.85rem;
       font-weight: 600;
       border: 1px solid rgba(97, 209, 255, 0.3);
-    }
-
-    .meta {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin: 0;
-      line-height: 1.5;
     }
 
     .deal-actions {
@@ -182,17 +136,6 @@
       border-color: var(--accent);
       color: var(--accent);
       background: rgba(155, 81, 255, 0.1);
-    }
-
-    .cols {
-      display: grid;
-      gap: 20px;
-      grid-template-columns: 1fr;
-    }
-    .cols > div {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
     }
 
     canvas {
@@ -232,16 +175,6 @@
       outline: none;
       border-color: var(--accent);
       box-shadow: var(--focus);
-    }
-
-    .empty {
-      color: var(--text-muted);
-      font-style: italic;
-      padding: 30px;
-      text-align: center;
-      background: var(--surface-2);
-      border-radius: var(--radius-sm);
-      border: 1px dashed var(--surface-border);
     }
 
     .stats-overview {
@@ -321,9 +254,6 @@
 
     .subgrid-title { margin: 0 0 15px 0; color: var(--text); }
 
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .btn:disabled:hover { background-color: var(--primary); border-color: var(--primary); transform: none; }
-
     .chart-hover-info {
       position: absolute;
       background: var(--surface);
@@ -359,8 +289,16 @@
   </style>
 </head>
 <body>
-  <div data-include="../components/header.html"></div>
-  <div data-include="../components/nav.html"></div>
+<style>
+  /* EMERGENCY FIX FOR HEADER (липкий хедер не перекрывает контент) */
+  body { padding-top: 84px !important; }
+  @media (max-width: 640px) { body { padding-top: 76px !important; } }
+
+  main.container { padding-top: 0 !important; margin-top: 0 !important; }
+</style>
+
+  <div data-include="/components/header.html"></div>
+  <div data-include="/components/nav.html"></div>
 
   <main class="container">
     <div class="page-header">
@@ -388,7 +326,7 @@
       </div>
     </div>
 
-    <section class="grid">
+    <section class="grid grid-auto-fit-300">
       <!-- Текущие проекты -->
       <article class="card" aria-labelledby="projects-title">
         <h2 id="projects-title">📋 Текущие проекты</h2>
@@ -418,7 +356,7 @@
                   <h4 class="deal-title">FashionStore - Коллекция</h4>
                   <span class="deal-status status-in-progress">В работе</span>
                 </div>
-                <p class="meta">Срок: до 20.09.2024 · Бюджет: $800</p>
+                <p class="meta">Срок: до 20.09.2024 · Бюджet: $800</p>
                 <div class="row">
                   <span class="badge">Instagram</span>
                   <span class="meta">8 дней осталось</span>
@@ -560,7 +498,7 @@
     </article>
   </main>
 
-  <div data-include="../components/footer.html"></div>
+  <div data-include="/components/footer.html"></div>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -574,7 +512,7 @@
           localStorage.removeItem('bloggerName');
           localStorage.removeItem('userRole');
           localStorage.removeItem('bloggerData');
-          window.location.href = '../index.html';
+          window.location.href = '/index.html';
         }
       });
 
@@ -751,7 +689,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const idFromQuery = urlParams.get('id');
 
-        let opts = { dataUrl: '../json/bloggers.json' };
+        let opts = { dataUrl: '/json/bloggers.json' };
 
         // Из localStorage
         const savedData = localStorage.getItem('bloggerData');
