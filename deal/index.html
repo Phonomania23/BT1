@@ -9,8 +9,10 @@
   <link rel="stylesheet" href="../css/base.css?v=20250901" />
   <link rel="stylesheet" href="../css/layout.css?v=20250901" />
   <link rel="stylesheet" href="../css/deal.css?v=20250901" />
+  <!-- Иконки как в agency.html -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  <!-- Стили карточек/фильтров: скопированы из agency.html, чтобы интерфейс был ТОЧНО таким же -->
+  <!-- Стили карточек/фильтров: КОПИЯ из agency.html -->
   <style>
     /* ==== КОПИЯ ИЗ agency.html (начало) ==== */
     .filterbar {
@@ -169,6 +171,16 @@
     .blogger-card-link:hover { text-decoration: underline; }
 
     .count { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--primary); }
+
+    /* выпадающее меню Контактов как в agency.html */
+    .contacts-dropdown { position: relative; display: inline-block; }
+    .contacts-dropdown-content{
+      display:none; position:absolute; right:0; background:var(--surface); min-width:160px;
+      box-shadow:var(--shadow-1); z-index:10; border-radius:8px; padding:12px; border:1px solid var(--surface-border);
+    }
+    .contacts-dropdown-content a{ color:var(--text); padding:8px 12px; text-decoration:none; display:block; border-radius:4px; font-size:14px;}
+    .contacts-dropdown-content a:hover{ background:var(--surface-3); }
+    .contacts-dropdown:hover .contacts-dropdown-content{ display:block; }
     /* ==== КОПИЯ ИЗ agency.html (конец) ==== */
   </style>
 
