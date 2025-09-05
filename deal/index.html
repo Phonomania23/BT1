@@ -10,34 +10,166 @@
   <link rel="stylesheet" href="../css/layout.css?v=20250901" />
   <link rel="stylesheet" href="../css/deal.css?v=20250901" />
 
-  <!-- Немного базовых стилей под простые карточки (как на agency.html) -->
+  <!-- Стили карточек/фильтров: скопированы из agency.html, чтобы интерфейс был ТОЧНО таким же -->
   <style>
-    .filterbar{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0;padding:16px;background:#f8f9fa;border-radius:12px;border:1px solid #e0e0e0}
-    .chip{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fff;border:1px solid #e0e0e0;border-radius:20px}
-    .chip label{font-weight:600;font-size:14px;color:#333;white-space:nowrap}
-    .chip input,.chip select{border:1px solid #ddd;border-radius:6px;padding:6px 8px;font-size:14px}
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;padding:12px;background:#f8f9fa;border-radius:8px;border:1px solid #e0e0e0}
-    .chip-filter{display:inline-flex;align-items:center;background:#f0f0f0;padding:6px 12px;border-radius:16px;margin:4px;font-size:14px}
-    .chip-filter button{background:none;border:none;margin-left:6px;cursor:pointer;color:#666}
+    /* ==== КОПИЯ ИЗ agency.html (начало) ==== */
+    .filterbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 16px 0;
+      padding: 16px;
+      background: var(--surface-2);
+      border-radius: 12px;
+      border: 1px solid var(--surface-border);
+    }
 
-    .cards-list{list-style:none;padding:0;margin:0;display:grid;gap:12px}
-    .card-blogger{background:#fff;border:1px solid #e0e0e0;border-radius:12px;padding:16px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start}
-    .card-blogger .avatar{width:48px;height:48px;border-radius:50%;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#666}
-    .card-blogger .name{font-weight:700;font-size:16px;color:#333;margin-bottom:4px}
-    .card-blogger .meta{color:#666;font-size:14px;margin-bottom:4px}
-    .card-blogger .badge{display:inline-block;padding:2px 8px;background:#e3f2fd;color:#1976d2;border-radius:12px;font-size:12px;font-weight:500;margin-right:6px}
-    .select-radio{display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer}
-    .card-blogger.selected{background-color:#e8f4fd;border-color:#2196F3}
+    .filter-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 12px;
+      background: var(--surface-2);
+      border-radius: 8px;
+      border: 1px solid var(--surface-border);
+      margin-bottom: 12px;
+    }
+    .filter-group-title {
+      width: 100%;
+      margin: 0 0 8px 0;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .filter-group-title i { color: var(--primary); }
+
+    .chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--surface-border);
+      border-radius: 20px;
+    }
+    .chip label {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .chip input, .chip select {
+      border: 1px solid var(--surface-border);
+      border-radius: 6px;
+      padding: 6px 8px;
+      font-size: 14px;
+      background: var(--surface);
+      color: var(--text);
+    }
+    .chip input:focus, .chip select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: var(--focus);
+      background: var(--surface-3);
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0;
+      padding: 12px;
+      background: var(--surface-2);
+      border-radius: 8px;
+      border: 1px solid var(--surface-border);
+    }
+    .chip-filter {
+      display: inline-flex;
+      align-items: center;
+      background: var(--surface-2);
+      border: 1px solid var(--surface-border);
+      padding: 6px 12px;
+      border-radius: 16px;
+      margin: 4px;
+      font-size: 14px;
+    }
+    .chip-filter button {
+      background: none;
+      border: none;
+      margin-left: 6px;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    .cards-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+    .card-blogger {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+      transition: var(--transition);
+    }
+    .card-blogger:hover { border-color: var(--primary); box-shadow: var(--shadow-1); }
+
+    .card-blogger .avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--surface-2);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; color: var(--text-muted); position: relative;
+    }
+    .platform-badge {
+      position: absolute; bottom: -4px; right: -4px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--surface); border: 2px solid var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; color: var(--text);
+    }
+    .card-blogger .name {
+      font-weight: 700; font-size: 16px; color: var(--text);
+      margin-bottom: 4px; display: flex; align-items: center; gap: 8px;
+    }
+    .verification-badge { color: var(--primary); font-size: 14px; }
+    .card-blogger .meta { color: var(--text-muted); font-size: 14px; margin-bottom: 4px; line-height: 1.4; }
+    .card-blogger .badge {
+      display: inline-block; padding: 2px 8px; background: var(--surface-2);
+      color: var(--text); border-radius: 12px; font-size: 12px; font-weight: 500;
+      margin-right: 6px; margin-bottom: 4px;
+    }
+    .badge.highlight { background: var(--primary); color: var(--primary-ink); }
+    .card-blogger .stats { display: flex; gap: 12px; margin: 8px 0; flex-wrap: wrap; }
+    .stat-item { display: flex; align-items: center; gap: 4px; font-size: 13px; color: var(--text-muted); }
+    .stat-item i { color: var(--primary); }
+    .select-radio { display: flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer; color: var(--text); }
+    .card-blogger.selected { background-color: rgba(199, 255, 26, 0.08); border-color: var(--primary); }
+
     .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
     .muted{color:var(--text-muted)}
-    input[type="checkbox"]{width:18px;height:18px;accent-color:var(--primary);cursor:pointer}
 
-    /* Стили для AI панели */
-    .ai-panel { margin-top: 24px; min-height: 100px; }
-    .ai-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; }
-    .ai-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 10px; }
-    .ai-section h4 { color: #666; font-weight: 600; margin-bottom: 8px; font-size: 14px; }
-    .ai-badge { background: #f0f0f0; padding: 4px 8px; border-radius: 12px; font-size: 14px; }
+    .sort-options { display: flex; gap: 8px; align-items: center; margin: 10px 0; }
+    .sort-label { font-weight: 600; font-size: 14px; color: var(--text); }
+    .sort-buttons { display: flex; gap: 4px; }
+    .sort-btn {
+      padding: 6px 12px; background: var(--surface-2); border: 1px solid var(--surface-border);
+      border-radius: 6px; font-size: 13px; cursor: pointer; transition: var(--transition); color: var(--text);
+    }
+    .sort-btn:hover { background: var(--surface-3); }
+    .sort-btn.active { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
+
+    .blogger-card-link {
+      color: var(--primary); text-decoration: none; font-size: 14px;
+      display: inline-flex; align-items: center; gap: 4px; margin-left: auto;
+    }
+    .blogger-card-link:hover { text-decoration: underline; }
+
+    .count { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--primary); }
+    /* ==== КОПИЯ ИЗ agency.html (конец) ==== */
   </style>
 
   <!-- Скрипты (ВАЖЕН ПОРЯДОК) -->
@@ -47,262 +179,386 @@
   <script defer src="../js/message-templates.js?v=1"></script>
   <script defer src="../js/ai-brief.js?v=1"></script>
 
-  <!-- Адаптер: делаем фильтры на шаге «Подбор» такими же, как на agency.html -->
+  <!-- Инициализация шага «Подбор» со СТРОГО той же системой фильтров, что и в agency.html -->
   <script defer>
     // Этот init вызывается роутером на шаге 1
     window.initPickStep = function(){
-      // Состояние
+      // Состояние (как в agency.html)
       const appState = {
-        selectedIds: new Set(readPicked()) // восстанавливаем выбор
+        selectedBloggers: JSON.parse(localStorage.getItem('selectedBloggers')||'[]'),
+        currentSort: 'relevance',
+        // Данные блогеров (точно как в agency.html — имитация)
+        mockBloggers: [
+          { 
+            id: 1, name: "Иван Петров", username: "tech_review", platform: "YouTube", 
+            followers: 125000, avg_views: 45000, er: 4.5, price: 2500,
+            blogger_gender: "male", blogger_age: "28", blogger_country: "Россия", blogger_language: "Русский",
+            audience_gender: "male", audience_age: "25-34", audience_country: "Россия", audience_language: "Русский",
+            growth: "growing", last_post: "2023-10-20", has_email: true, has_phone: false, has_telegram: true, has_whatsapp: false,
+            verified: true, bio: "Обзоры техники и гаджетов | Tech reviewer | unboxing"
+          },
+          { 
+            id: 2, name: "Анна Сидорова", username: "anna_beauty", platform: "Instagram", 
+            followers: 87000, avg_views: 25000, er: 7.2, price: 1800,
+            blogger_gender: "female", blogger_age: "22", blogger_country: "Россия", blogger_language: "Русский",
+            audience_gender: "female", audience_age: "18-24", audience_country: "Россия", audience_language: "Русский",
+            growth: "stable", last_post: "2023-10-22", has_email: true, has_phone: true, has_telegram: false, has_whatsapp: true,
+            verified: false, bio: "💄 Косметика и уход | Beauty blogger | makeup tutorials"
+          },
+          { 
+            id: 3, name: "Сергей Козлов", username: "game_master", platform: "YouTube", 
+            followers: 356000, avg_views: 89000, er: 3.8, price: 4200,
+            blogger_gender: "male", blogger_age: "25", blogger_country: "США", blogger_language: "Английский",
+            audience_gender: "male", audience_age: "13-17", audience_country: "США", audience_language: "Английский",
+            growth: "growing", last_post: "2023-10-15", has_email: false, has_phone: false, has_telegram: true, has_whatsapp: false,
+            verified: true, bio: "Gaming channel | Live streams | Game reviews"
+          },
+          { 
+            id: 4, name: "Мария Иванова", username: "fashion_maria", platform: "Instagram", 
+            followers: 210000, avg_views: 65000, er: 8.1, price: 1900,
+            blogger_gender: "female", blogger_age: "21", blogger_country: "Великобритания", blogger_language: "Английский",
+            audience_gender: "female", audience_age: "18-24", audience_country: "Великобритания", audience_language: "Английский",
+            growth: "growing", last_post: "2023-10-23", has_email: true, has_phone: true, has_telegram: true, has_whatsapp: true,
+            verified: true, bio: "Fashion & lifestyle | Outfit ideas | London based"
+          },
+          { 
+            id: 5, name: "Дмитрий Смирнов", username: "news_dima", platform: "YouTube", 
+            followers: 45000, avg_views: 12000, er: 5.5, price: 1200,
+            blogger_gender: "male", blogger_age: "40", blogger_country: "Россия", blogger_language: "Русский",
+            audience_gender: "mixed", audience_age: "35-44", audience_country: "Россия", audience_language: "Русский",
+            growth: "stable", last_post: "2023-10-23", has_email: true, has_phone: false, has_telegram: false, has_whatsapp: false,
+            verified: false, bio: "Новости и аналитика | Политика и экономика"
+          }
+        ]
       };
 
-      // Данные (как в agency.html — mock с расширенными полями)
-      const mockBloggers = [
-        { id: 1,  name: "Иван Петров",     platform: "YouTube",   followers: 125000, er: 4.5, category: "техника",     price: 2500, email: "ivan@example.com",   geo: "RU", audienceGeo: "RU", audienceAge: "25-34", bloggerAge: "28", audienceGender: "male",   bloggerGender: "male" },
-        { id: 2,  name: "Анна Сидорова",   platform: "Instagram", followers: 87000,  er: 7.2, category: "красота",     price: 1800, email: "anna@example.com",   geo: "RU", audienceGeo: "RU", audienceAge: "18-24", bloggerAge: "22", audienceGender: "female", bloggerGender: "female" },
-        { id: 3,  name: "Сергей Козлов",   platform: "YouTube",   followers: 356000, er: 3.8, category: "игры",        price: 4200, email: "sergey@example.com", geo: "RU", audienceGeo: "RU", audienceAge: "13-17", bloggerAge: "25", audienceGender: "male",   bloggerGender: "male" },
-        { id: 4,  name: "Мария Иванова",   platform: "TikTok",    followers: 210000, er: 8.1, category: "мода",        price: 1900, email: "maria@example.com",  geo: "EN", audienceGeo: "EN", audienceAge: "18-24", bloggerAge: "21", audienceGender: "female", bloggerGender: "female" },
-        { id: 5,  name: "Дмитрий Смирнов", platform: "Telegram",  followers: 45000,  er: 5.5, category: "новости",     price: 1200, email: "dmitry@example.com", geo: "RU", audienceGeo: "RU", audienceAge: "35-44", bloggerAge: "40", audienceGender: "male",   bloggerGender: "male" },
-        { id: 6,  name: "Ольга Кузнецова", platform: "YouTube",   followers: 98000,  er: 6.2, category: "кулинария",   price: 1600, email: "olga@example.com",   geo: "RU", audienceGeo: "RU", audienceAge: "25-34", bloggerAge: "32", audienceGender: "female", bloggerGender: "female" },
-        { id: 7,  name: "Алексей Попов",   platform: "TikTok",    followers: 320000, er: 5.8, category: "юмор",        price: 2800, email: "alex@example.com",   geo: "EN", audienceGeo: "EN", audienceAge: "18-24", bloggerAge: "19", audienceGender: "male",   bloggerGender: "male" },
-        { id: 8,  name: "Елена Васнецова", platform: "Instagram", followers: 145000, er: 6.9, category: "здоровье",    price: 2200, email: "elena@example.com",  geo: "ES", audienceGeo: "ES", audienceAge: "35-44", bloggerAge: "38", audienceGender: "female", bloggerGender: "female" },
-        { id: 9,  name: "Карлос Санчес",   platform: "YouTube",   followers: 89000,  er: 9.2, category: "путешествия", price: 1900, email: "carlos@example.com", geo: "ES", audienceGeo: "ES", audienceAge: "25-34", bloggerAge: "29", audienceGender: "male",   bloggerGender: "male" },
-        { id:10,  name: "Пьер Дюпон",      platform: "Instagram", followers: 112000, er: 8.7, category: "мода",        price: 2100, email: "pierre@example.com", geo: "FR", audienceGeo: "FR", audienceAge: "25-34", bloggerAge: "31", audienceGender: "male",   bloggerGender: "male" },
-        { id:11,  name: "Ли Вей",          platform: "TikTok",    followers: 480000, er: 7.8, category: "техника",     price: 3500, email: "li@example.com",     geo: "CN", audienceGeo: "CN", audienceAge: "18-24", bloggerAge: "23", audienceGender: "male",   bloggerGender: "male" },
-        { id:12,  name: "Чжан Мин",        platform: "YouTube",   followers: 125000, er: 6.5, category: "образование", price: 1800, email: "zhang@example.com",  geo: "CN", audienceGeo: "CN", audienceAge: "25-34", bloggerAge: "30", audienceGender: "female", bloggerGender: "female" }
-      ];
+      // Хелперы быстрого доступа
+      const $ = (sel) => document.querySelector(sel);
 
-      // Быстрые селекторы
-      const $ = sel => document.querySelector(sel);
-      const resultsEl = $('#resultsList');
-
-      // Инициализация
+      // Навесим обработчики и первичный рендер
       setupEventListeners();
-      applyFilters();
+      renderBloggersList();
       updateSelectionCount();
-      // Обновим хранилище на старте
-      writePicked([...appState.selectedIds]);
+      updateActiveChips();
 
-      function setupEventListeners(){
+      /* ===== РОВНО ТАКАЯ ЖЕ ЛОГИКА, КАК В agency.html ===== */
+
+      function setupEventListeners() {
+        // Фильтры
         const filterIds = [
-          'fPlatform','followersMinK','followersMaxK','fCategory',
-          'fAudienceGeo','fBloggerGeo','fAudienceAge','fBloggerAge',
-          'fAudienceGender','fBloggerGender','fErMin','fErMax',
-          'fPriceMin','fPriceMax','fQuery'
+          'fPlatform', 'followersMin', 'followersMax', 'fFollowersUnit',
+          'fAvgViewsMin', 'fErMin', 'fErMax', 'fGrowth', 'fLastPost',
+          'fBloggerGender', 'fBloggerAge', 'fBloggerLanguage', 'fBloggerCountry',
+          'fAudienceGender', 'fAudienceAge', 'fAudienceCountry', 'fAudienceLanguage',
+          'fKeywords', 'fBio', 'fContactType', 'fSimilarTo'
         ];
-        filterIds.forEach(id=>{
+        filterIds.forEach(id => {
           const el = document.getElementById(id);
           if (!el) return;
           el.addEventListener('input', applyFilters);
           el.addEventListener('change', applyFilters);
         });
 
-        document.getElementById('clearFilters')?.addEventListener('click', ()=>{
-          filterIds.forEach(id=>{
-            const el = document.getElementById(id);
-            if (el) el.value = '';
-          });
-          applyFilters();
+        // Чекбоксы
+        ['fVerifiedOnly'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.addEventListener('change', applyFilters);
         });
 
+        // Кнопки
+        document.getElementById('clearFilters')?.addEventListener('click', clearAllFilters);
         document.getElementById('selectAll')?.addEventListener('click', selectAllFiltered);
-        document.getElementById('clearPicked')?.addEventListener('click', ()=>{
-          appState.selectedIds.clear();
-          writePicked([]);
-          updateSelectionCount();
-          // Сброс чекбоксов и подсветки
-          resultsEl?.querySelectorAll('.card-blogger').forEach(li=>{
-            li.classList.remove('selected');
-            li.querySelector('input[type="checkbox"]')?.checked && (li.querySelector('input[type="checkbox"]').checked=false);
+        document.getElementById('clearPicked')?.addEventListener('click', clearSelectedBloggers);
+        document.getElementById('exportResults')?.addEventListener('click', exportToCSV);
+
+        // Сортировка
+        document.querySelectorAll('.sort-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            appState.currentSort = this.dataset.sort;
+            applyFilters();
           });
         });
       }
 
-      function applyFilters(){
-        const platform       = $('#fPlatform')?.value || '';
-        const minFollowersK  = parseInt($('#followersMinK')?.value || '') || 0;
-        const maxFollowersK  = parseInt($('#followersMaxK')?.value || '') || Infinity;
-        const category       = ($('#fCategory')?.value || '').toLowerCase();
-        const audienceGeo    = $('#fAudienceGeo')?.value || '';
-        const bloggerGeo     = $('#fBloggerGeo')?.value || '';
-        const audienceAge    = $('#fAudienceAge')?.value || '';
-        const bloggerAge     = $('#fBloggerAge')?.value || '';
-        const audienceGender = $('#fAudienceGender')?.value || '';
-        const bloggerGender  = $('#fBloggerGender')?.value || '';
-        const erMin          = parseFloat($('#fErMin')?.value || '') || 0;
-        const erMax          = parseFloat($('#fErMax')?.value || '') || Infinity;
-        const priceMin       = parseInt($('#fPriceMin')?.value || '') || 0;
-        const priceMax       = parseInt($('#fPriceMax')?.value || '') || Infinity;
-        const q              = ($('#fQuery')?.value || '').toLowerCase();
-
-        let list = mockBloggers.filter(b=>{
-          if (platform && b.platform !== platform) return false;
-          const fK = b.followers/1000;
-          if (fK < minFollowersK || fK > maxFollowersK) return false;
-          if (category && !b.category.toLowerCase().includes(category)) return false;
-          if (audienceGeo && b.audienceGeo !== audienceGeo) return false;
-          if (bloggerGeo && b.geo !== bloggerGeo) return false;
-          if (audienceAge && b.audienceAge !== audienceAge) return false;
-          if (bloggerAge){
-            const [minA,maxA] = bloggerAge==='65+' ? [65,100] : bloggerAge.split('-').map(Number);
-            const ageNum = parseInt(b.bloggerAge);
-            if (ageNum<minA || ageNum>maxA) return false;
-          }
-          if (audienceGender && b.audienceGender !== audienceGender) return false;
-          if (bloggerGender && b.bloggerGender !== bloggerGender) return false;
-          if (b.er < erMin || b.er > erMax) return false;
-          if (b.price < priceMin || b.price > priceMax) return false;
-          if (q && !( b.name.toLowerCase().includes(q) || b.category.toLowerCase().includes(q) || b.platform.toLowerCase().includes(q) )) return false;
-          return true;
-        });
-
-        // Рендер
-        renderList(list);
-        // Чипы
+      function applyFilters() {
+        renderBloggersList();
         updateActiveChips();
-        // Счётчики
-        $('#resultsCount').textContent = list.length;
-      }
-
-      function renderList(list){
-        if (!resultsEl) return;
-        resultsEl.innerHTML = '';
-        if (!list.length){
-          resultsEl.innerHTML = '<li class="muted">Ничего не найдено. Попробуйте изменить фильтры.</li>';
-          return;
-        }
-        list.forEach(b=>{
-          const isSel = appState.selectedIds.has(String(b.id));
-          const li = document.createElement('li');
-          li.className = 'card-blogger' + (isSel ? ' selected' : '');
-          li.innerHTML = `
-            <div class="avatar">${b.name.charAt(0)}</div>
-            <div>
-              <div class="name">${b.name}</div>
-              <div class="meta">
-                <span class="badge">${b.platform}</span>
-                <span class="badge">${b.category}</span>
-                <span class="badge">${b.geo}</span>
-                <span class="badge">Аудитория: ${b.audienceAge}</span>
-                <span class="badge">${b.bloggerGender === 'male' ? 'М' : 'Ж'}, ${b.bloggerAge} лет</span>
-              </div>
-              <div class="meta">
-                Подписчики: ${(b.followers/1000|0)}K · ER: ${b.er}% · Цена: ${b.price}$
-              </div>
-              <div class="actions">
-                <label class="select-radio">
-                  <input type="checkbox" data-id="${b.id}" ${isSel?'checked':''}/> В выборку
-                </label>
-                <button class="btn btn-secondary btn-sm" 
-                        onclick="Messenger.openThread({id:'blogger-${b.id}', name:'${b.name}', role:'blogger'})"
-                        style="margin-left: 8px">
-                  Написать
-                </button>
-              </div>
-            </div>
-          `;
-          // чекбокс
-          li.querySelector('input[type="checkbox"]').addEventListener('change', e=>{
-            const id = String(e.currentTarget.dataset.id);
-            if (e.currentTarget.checked) appState.selectedIds.add(id);
-            else appState.selectedIds.delete(id);
-            writePicked([...appState.selectedIds]);
-            li.classList.toggle('selected', e.currentTarget.checked);
-            updateSelectionCount();
-            
-            // Уведомление о добавлении в выборку
-            if (e.currentTarget.checked && window.Notifier) {
-              Notifier.push({
-                type: "info",
-                title: "Добавлено в выборку",
-                text: "Блогер отмечен. Можно переходить к брифу.",
-              });
-            }
-          });
-          resultsEl.appendChild(li);
-        });
-      }
-
-      function selectAllFiltered(){
-        // Собираем id всех карточек на экране
-        const ids = [...resultsEl.querySelectorAll('input[type="checkbox"][data-id]')]
-          .map(cb => String(cb.dataset.id));
-        ids.forEach(id=> appState.selectedIds.add(id));
-        writePicked([...appState.selectedIds]);
-        // Обновим UI
-        resultsEl.querySelectorAll('.card-blogger').forEach(li=>{
-          li.classList.add('selected');
-          const cb = li.querySelector('input[type="checkbox"]');
-          if (cb) cb.checked = true;
-        });
         updateSelectionCount();
       }
 
-      function updateSelectionCount(){
-        const pc = document.getElementById('pickedCount');
-        if (pc) pc.textContent = appState.selectedIds.size;
+      function clearAllFilters() {
+        const inputs = document.querySelectorAll('#filtersForm input, #filtersForm select');
+        inputs.forEach(input => {
+          if (input.type === 'checkbox') input.checked = false;
+          else input.value = '';
+        });
+        applyFilters();
       }
 
-      function updateActiveChips(){
-        const box = document.getElementById('activeChips');
-        if (!box) return;
-        box.innerHTML = '';
+      function updateActiveChips() {
+        const chipsContainer = document.getElementById('activeChips');
+        if (!chipsContainer) return;
+        chipsContainer.innerHTML = '';
 
-        const filters = [
-          ['Платформа',      $('#fPlatform')?.value],
-          ['Подписчики от',  valK($('#followersMinK')?.value, 'k')],
-          ['Подписчики до',  valK($('#followersMaxK')?.value, 'k')],
-          ['Рубрика',        $('#fCategory')?.value],
-          ['Гео аудитории',  $('#fAudienceGeo')?.value],
-          ['Гео блогера',    $('#fBloggerGeo')?.value],
-          ['Возраст ауд.',   $('#fAudienceAge')?.value],
-          ['Возраст блогера',$('#fBloggerAge')?.value],
-          ['Пол аудитории',  genderTxt($('#fAudienceGender')?.value)],
-          ['Пол блогера',    genderTxt($('#fBloggerGender')?.value)],
-          ['ER от',          valK($('#fErMin')?.value, '%')],
-          ['ER до',          valK($('#fErMax')?.value, '%')],
-          ['Цена от',        valK($('#fPriceMin')?.value, '$')],
-          ['Цена до',        valK($('#fPriceMax')?.value, '$')],
-          ['Поиск',          $('#fQuery')?.value]
-        ].filter(([,v])=>v);
-
-        filters.forEach(([label, v, id])=>{
+        const addChip = (text, clearFn) => {
           const chip = document.createElement('div');
           chip.className = 'chip-filter';
-          chip.innerHTML = `${label}: ${v} <button type="button">×</button>`;
-          chip.querySelector('button').addEventListener('click', ()=>{
-            // грубо находим по тексту, но проще — почистим все связанные поля
-            switch(label){
-              case 'Платформа': $('#fPlatform').value=''; break;
-              case 'Подписчики от': $('#followersMinK').value=''; break;
-              case 'Подписчики до': $('#followersMaxK').value=''; break;
-              case 'Рубрика': $('#fCategory').value=''; break;
-              case 'Гео аудитории': $('#fAudienceGeo').value=''; break;
-              case 'Гео блогера': $('#fBloggerGeo').value=''; break;
-              case 'Возраст ауд.': $('#fAudienceAge').value=''; break;
-              case 'Возраст блогера': $('#fBloggerAge').value=''; break;
-              case 'Пол аудитории': $('#fAudienceGender').value=''; break;
-              case 'Пол блогера': $('#fBloggerGender').value=''; break;
-              case 'ER от': $('#fErMin').value=''; break;
-              case 'ER до': $('#fErMax').value=''; break;
-              case 'Цена от': $('#fPriceMin').value=''; break;
-              case 'Цена до': $('#fPriceMax').value=''; break;
-              case 'Поиск': $('#fQuery').value=''; break;
-            }
-            applyFilters();
-          });
-          box.appendChild(chip);
+          chip.innerHTML = `${text} <button type="button">×</button>`;
+          chip.querySelector('button').addEventListener('click', clearFn);
+          chipsContainer.appendChild(chip);
+        };
+
+        const platform = $('#fPlatform')?.value;
+        const growth = $('#fGrowth')?.value;
+        const bloggerGender = $('#fBloggerGender')?.value;
+        const contactType = $('#fContactType')?.value;
+        const erMin = $('#fErMin')?.value;
+        const erMax = $('#fErMax')?.value;
+        const verified = $('#fVerifiedOnly')?.checked;
+
+        if (platform) addChip(`Платформа: ${platform}`, () => { $('#fPlatform').value = ''; applyFilters(); });
+        if (growth) addChip(`Рост: ${growth}`, () => { $('#fGrowth').value = ''; applyFilters(); });
+        if (bloggerGender) addChip(`Пол: ${bloggerGender}`, () => { $('#fBloggerGender').value = ''; applyFilters(); });
+        if (contactType) addChip(`Контакт: ${contactType}`, () => { $('#fContactType').value = ''; applyFilters(); });
+        if (erMin) addChip(`ER от: ${erMin}%`, () => { $('#fErMin').value = ''; applyFilters(); });
+        if (erMax) addChip(`ER до: ${erMax}%`, () => { $('#fErMax').value = ''; applyFilters(); });
+        if (verified) addChip('Только верифицированные', () => { $('#fVerifiedOnly').checked = false; applyFilters(); });
+      }
+
+      function renderBloggersList() {
+        const listContainer = document.getElementById('resultsList');
+        if (!listContainer) return;
+        listContainer.innerHTML = '';
+
+        // Значения фильтров (как в agency.html)
+        const filters = {
+          platform: $('#fPlatform')?.value || '',
+          followersMin: parseInt($('#followersMin')?.value) || 0,
+          followersMax: parseInt($('#followersMax')?.value) || Infinity,
+          followersUnit: $('#fFollowersUnit')?.value || 'k',
+          avgViewsMin: parseInt($('#fAvgViewsMin')?.value) || 0,
+          erMin: parseFloat($('#fErMin')?.value) || 0,
+          erMax: parseFloat($('#fErMax')?.value) || Infinity,
+          growth: $('#fGrowth')?.value || '',
+          lastPost: $('#fLastPost')?.value || '',
+          bloggerGender: $('#fBloggerGender')?.value || '',
+          bloggerAge: $('#fBloggerAge')?.value || '',
+          bloggerLanguage: $('#fBloggerLanguage')?.value || '',
+          bloggerCountry: $('#fBloggerCountry')?.value || '',
+          audienceGender: $('#fAudienceGender')?.value || '',
+          audienceAge: $('#fAudienceAge')?.value || '',
+          audienceCountry: $('#fAudienceCountry')?.value || '',
+          audienceLanguage: $('#fAudienceLanguage')?.value || '',
+          keywords: ($('#fKeywords')?.value || '').toLowerCase(),
+          bio: ($('#fBio')?.value || '').toLowerCase(),
+          contactType: $('#fContactType')?.value || '',
+          verifiedOnly: $('#fVerifiedOnly')?.checked || false,
+          similarTo: $('#fSimilarTo')?.value || ''
+        };
+
+        let filtered = appState.mockBloggers.filter(b => {
+          if (filters.platform && b.platform !== filters.platform) return false;
+
+          const followersValue = filters.followersUnit === 'm' ? b.followers / 1_000_000 : b.followers / 1_000;
+          if (followersValue < filters.followersMin || followersValue > filters.followersMax) return false;
+
+          if (b.avg_views < filters.avgViewsMin) return false;
+          if (b.er < filters.erMin || b.er > filters.erMax) return false;
+
+          if (filters.growth && b.growth !== filters.growth) return false;
+
+          if (filters.bloggerGender && b.blogger_gender !== filters.bloggerGender) return false;
+          if (filters.bloggerAge && b.blogger_age !== filters.bloggerAge) return false;
+          if (filters.bloggerCountry && b.blogger_country !== filters.bloggerCountry) return false;
+          if (filters.bloggerLanguage && b.blogger_language !== filters.bloggerLanguage) return false;
+
+          if (filters.audienceGender && b.audience_gender !== filters.audienceGender) return false;
+          if (filters.audienceAge && b.audience_age !== filters.audienceAge) return false;
+          if (filters.audienceCountry && b.audience_country !== filters.audienceCountry) return false;
+          if (filters.audienceLanguage && b.audience_language !== filters.audienceLanguage) return false;
+
+          if (filters.contactType) {
+            if (filters.contactType === 'email' && !b.has_email) return false;
+            if (filters.contactType === 'phone' && !b.has_phone) return false;
+            if (filters.contactType === 'telegram' && !b.has_telegram) return false;
+            if (filters.contactType === 'whatsapp' && !b.has_whatsapp) return false;
+            if (filters.contactType === 'instagram_dm' && b.platform !== 'Instagram') return false;
+          }
+
+          if (filters.verifiedOnly && !b.verified) return false;
+
+          if (filters.keywords && !(
+            b.name.toLowerCase().includes(filters.keywords) ||
+            (b.bio||'').toLowerCase().includes(filters.keywords)
+          )) return false;
+
+          if (filters.bio && !(b.bio||'').toLowerCase().includes(filters.bio)) return false;
+
+          // lastPost: 1,7,30 дней
+          if (filters.lastPost) {
+            const days = parseInt(filters.lastPost, 10);
+            const d = new Date();
+            const cutoff = new Date(d.getFullYear(), d.getMonth(), d.getDate() - days);
+            if (new Date(b.last_post) < cutoff) return false;
+          }
+
+          // similarTo: демо — пропускаем фильтрацию (нет связей в моках)
+          return true;
         });
 
-        function valK(v, suffix){ v=String(v||'').trim(); return v? `${v}${suffix}`:'' }
-        function genderTxt(v){ return v===''? '': (v==='male'?'Мужской': v==='female'?'Женский':'') }
+        // Сортировка
+        switch(appState.currentSort) {
+          case 'followers': filtered.sort((a,b)=> b.followers - a.followers); break;
+          case 'avg_views': filtered.sort((a,b)=> b.avg_views - a.avg_views); break;
+          case 'er':        filtered.sort((a,b)=> b.er - a.er); break;
+          case 'relevance':
+          default:
+            filtered.sort((a,b)=>(b.followers + b.avg_views + b.er*1000) - (a.followers + a.avg_views + a.er*1000));
+            break;
+        }
+
+        // Счётчики
+        const rc1 = document.getElementById('resultsCount'); if (rc1) rc1.textContent = filtered.length;
+        const rc2 = document.getElementById('resultsCount2'); if (rc2) rc2.textContent = filtered.length;
+        const pc2 = document.getElementById('pickedCount2'); if (pc2) pc2.textContent = appState.selectedBloggers.length;
+
+        // Рендер
+        if (!filtered.length) {
+          listContainer.innerHTML = '<li class="muted">Ничего не найдено. Попробуйте изменить фильтры.</li>';
+          return;
+        }
+
+        filtered.forEach(b => {
+          const isSelected = appState.selectedBloggers.some(x => x.id === b.id);
+          const li = document.createElement('li');
+          li.className = 'card-blogger' + (isSelected ? ' selected' : '');
+          li.innerHTML = `
+            <div class="avatar">
+              ${b.name.charAt(0)}
+              <div class="platform-badge">${getPlatformIcon(b.platform)}</div>
+            </div>
+            <div>
+              <div class="name">
+                ${b.name}
+                ${b.verified ? '<span class="verification-badge"><i class="fas fa-check-circle"></i></span>' : ''}
+                <span class="muted">@${b.username}</span>
+                <a href="blogger-card.html?id=${b.id}" class="blogger-card-link">
+                  <i class="fas fa-external-link-alt"></i> Карточка
+                </a>
+              </div>
+              <div class="meta">
+                <span class="badge">${b.platform}</span>
+                <span class="badge">${b.blogger_country}</span>
+                <span class="badge">ER: ${b.er}%</span>
+                ${b.growth === 'growing' ? '<span class="badge highlight"><i class="fas fa-arrow-up"></i> Растет</span>' : ''}
+              </div>
+              <div class="stats">
+                <div class="stat-item"><i class="fas fa-users"></i> ${formatFollowers(b.followers)}</div>
+                <div class="stat-item"><i class="fas fa-eye"></i> ${formatNumber(b.avg_views)}</div>
+                <div class="stat-item"><i class="fas fa-chart-line"></i> ${b.er}% ER</div>
+              </div>
+              <div class="meta">
+                Блогер: ${b.blogger_gender === 'male' ? 'М' : 'Ж'}, ${b.blogger_age} | 
+                Аудитория: ${b.audience_gender === 'male' ? 'М' : (b.audience_gender==='female'?'Ж':'Смеш.')}, ${b.audience_age}
+              </div>
+              <div class="meta">
+                ${b.bio || ''}
+              </div>
+              <div class="actions">
+                <label class="select-radio">
+                  <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleBloggerSelection(${b.id})" />
+                  В выборку
+                </label>
+                <div class="contacts-dropdown">
+                  <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;">
+                    <i class="fas fa-envelope"></i> Контакты
+                  </button>
+                  <div class="contacts-dropdown-content">
+                    ${b.has_email ? '<a href="#"><i class="fas fa-envelope"></i> Email</a>' : ''}
+                    ${b.has_phone ? '<a href="#"><i class="fas fa-phone"></i> Телефон</a>' : ''}
+                    ${b.has_telegram ? '<a href="#"><i class="fab fa-telegram"></i> Telegram</a>' : ''}
+                    ${b.has_whatsapp ? '<a href="#"><i class="fab fa-whatsapp"></i> WhatsApp</a>' : ''}
+                    ${b.platform === 'Instagram' ? '<a href="#"><i class="fab fa-instagram"></i> Instagram DM</a>' : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+          listContainer.appendChild(li);
+        });
       }
 
-      function readPicked(){
-        try{ return JSON.parse(localStorage.getItem('selectedBloggers')||'[]'); }catch{ return [] }
+      function getPlatformIcon(p) { return ({'YouTube':'▶️','Instagram':'📷','TikTok':'🎵'})[p] || '🌐'; }
+      function formatFollowers(n){ if(n>=1_000_000) return (n/1_000_000).toFixed(1)+'M'; if(n>=1_000) return (n/1_000).toFixed(1)+'K'; return n; }
+      function formatNumber(n){ if(n>=1_000_000) return (n/1_000_000).toFixed(1)+'M'; if(n>=1_000) return (n/1_000).toFixed(1)+'K'; return n; }
+
+      // Глобально, как в agency.html (используется в onchange)
+      window.toggleBloggerSelection = function(id){
+        const b = appState.mockBloggers.find(x=>x.id===id);
+        if (!b) return;
+        const i = appState.selectedBloggers.findIndex(x=>x.id===id);
+        if (i===-1) appState.selectedBloggers.push(b);
+        else appState.selectedBloggers.splice(i,1);
+        localStorage.setItem('selectedBloggers', JSON.stringify(appState.selectedBloggers));
+        updateSelectionCount();
+        // Перерисуем, чтобы подсветка/чекбокс обновились
+        renderBloggersList();
+      };
+
+      function updateSelectionCount(){
+        const picked = appState.selectedBloggers.length;
+        const p1 = document.getElementById('pickedCount'); if (p1) p1.textContent = picked;
+        const p2 = document.getElementById('pickedCount2'); if (p2) p2.textContent = picked;
       }
-      function writePicked(arr){
-        try{ localStorage.setItem('selectedBloggers', JSON.stringify(arr)); }catch{}
+
+      function selectAllFiltered(){
+        const listContainer = document.getElementById('resultsList');
+        const ids = Array.from(listContainer.querySelectorAll('.card-blogger input[type="checkbox"]'))
+          .map(cb => parseInt(cb.getAttribute('onchange').match(/\d+/)[0],10))
+          .filter(Boolean);
+        ids.forEach(id=>{
+          if (!appState.selectedBloggers.some(x=>x.id===id)) {
+            const b = appState.mockBloggers.find(x=>x.id===id);
+            if (b) appState.selectedBloggers.push(b);
+          }
+        });
+        localStorage.setItem('selectedBloggers', JSON.stringify(appState.selectedBloggers));
+        updateSelectionCount();
+        renderBloggersList();
+      }
+
+      function clearSelectedBloggers(){
+        appState.selectedBloggers = [];
+        localStorage.setItem('selectedBloggers', JSON.stringify(appState.selectedBloggers));
+        updateSelectionCount();
+        renderBloggersList();
+      }
+
+      function exportToCSV(){
+        const headers = ['Имя','Username','Платформа','Подписчики','Просмотры','ER','Страна'];
+        const data = appState.selectedBloggers.length ? appState.selectedBloggers : appState.mockBloggers;
+        const csv = [
+          headers.join(','),
+          ...data.map(b=>[
+            `"${b.name}"`,
+            `"${b.username}"`,
+            b.platform,
+            b.followers,
+            b.avg_views,
+            b.er,
+            b.blogger_country
+          ].join(','))
+        ].join('\n');
+        const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'bloggers_export.csv';
+        a.style.display='none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
       }
     };
   </script>
@@ -359,145 +615,241 @@
 
   <!-- ================== ШАБЛОНЫ ШАГОВ ================== -->
 
-  <!-- Шаг 1: Подбор — разметка идентична agency.html по id -->
+  <!-- Шаг 1: Подбор — разметка фильтров СОВПАДАЕТ с agency.html -->
   <template id="tpl-1-pick">
     <h2>Подбор блогеров</h2>
 
-    <!-- ФИЛЬТР-БАР (точно как на agency.html) -->
+    <!-- Опции сортировки (как в agency.html) -->
+    <div class="sort-options">
+      <span class="sort-label">Сортировка:</span>
+      <div class="sort-buttons">
+        <button class="sort-btn" data-sort="followers">Подписчики</button>
+        <button class="sort-btn" data-sort="avg_views">Просмотры</button>
+        <button class="sort-btn" data-sort="er">ER</button>
+        <button class="sort-btn active" data-sort="relevance">Релевантность</button>
+      </div>
+    </div>
+
+    <!-- ФИЛЬТР-БАР (1:1 с agency.html) -->
     <form id="filtersForm" class="filterbar" onsubmit="return false">
-      <!-- Платформа -->
-      <div class="chip">
-        <label>Платформа</label>
-        <select id="fPlatform">
-          <option value="">Все платформы</option>
-          <option>YouTube</option>
-          <option>TikTok</option>
-          <option>Instagram</option>
-          <option>Telegram</option>
-        </select>
+      <!-- Группа 1: Платформа и статистика -->
+      <div class="filter-group">
+        <h3 class="filter-group-title"><i class="fas fa-globe"></i> Платформа и статистика</h3>
+
+        <div class="chip">
+          <label>Платформа</label>
+          <select id="fPlatform">
+            <option value="">Все платформы</option>
+            <option>Instagram</option>
+            <option>YouTube</option>
+            <option>TikTok</option>
+          </select>
+        </div>
+
+        <div class="chip">
+          <label>Подписчики</label>
+          <input id="followersMin" type="number" min="0" step="1" placeholder="от" style="width:80px" />
+          <span class="muted">—</span>
+          <input id="followersMax" type="number" min="0" step="1" placeholder="до" style="width:80px" />
+          <select id="fFollowersUnit" style="width: 60px;">
+            <option value="k">тыс.</option>
+            <option value="m">млн</option>
+          </select>
+        </div>
+
+        <div class="chip">
+          <label>Ср. просмотры</label>
+          <input id="fAvgViewsMin" type="number" placeholder="от" min="0" step="1000" style="width:90px" />
+        </div>
+
+        <div class="chip">
+          <label>ER, %</label>
+          <input id="fErMin" type="number" placeholder="от" min="0" max="100" step="0.1" style="width:80px" />
+          <span class="muted">—</span>
+          <input id="fErMax" type="number" placeholder="до" min="0" max="100" step="0.1" style="width:80px" />
+        </div>
+
+        <div class="chip">
+          <label>Рост подписчиков</label>
+          <select id="fGrowth">
+            <option value="">Любой</option>
+            <option value="growing">Растущий</option>
+            <option value="stable">Стабильный</option>
+            <option value="declining">Падающий</option>
+          </select>
+        </div>
+
+        <div class="chip">
+          <label>Последний пост</label>
+          <select id="fLastPost">
+            <option value="">Не важно</option>
+            <option value="1">За сутки</option>
+            <option value="7">За неделю</option>
+            <option value="30">За месяц</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Подписчики -->
-      <div class="chip">
-        <label>Подписчики (тыс.)</label>
-        <input id="followersMinK" type="number" min="0" step="1" placeholder="от" style="width:80px" />
-        <span class="muted">—</span>
-        <input id="followersMaxK" type="number" min="0" step="1" placeholder="до" style="width:80px" />
+      <!-- Группа 2: Блогер -->
+      <div class="filter-group">
+        <h3 class="filter-group-title"><i class="fas fa-user"></i> Блогер</h3>
+
+        <div class="chip">
+          <label>Пол блогера</label>
+          <select id="fBloggerGender">
+            <option value="">Любой</option>
+            <option value="male">Мужской</option>
+            <option value="female">Женский</option>
+          </select>
+        </div>
+
+        <div class="chip">
+          <label>Возраст блогера</label>
+          <select id="fBloggerAge">
+            <option value="">Любой</option>
+            <option value="13-17">13-17</option>
+            <option value="18-24">18-24</option>
+            <option value="25-34">25-34</option>
+            <option value="35-44">35-44</option>
+            <option value="45+">45+</option>
+          </select>
+        </div>
+
+        <div class="chip">
+          <label>Язык блогера</label>
+          <select id="fBloggerLanguage">
+            <option value="">Любой</option>
+            <option>Русский</option>
+            <option>Английский</option>
+            <option>Испанский</option>
+          </select>
+        </div>
+
+        <div class="chip">
+          <label>Страна блогера</label>
+          <select id="fBloggerCountry">
+            <option value="">Любая</option>
+            <option>Россия</option>
+            <option>США</option>
+            <option>Великобритания</option>
+            <option>Германия</option>
+            <option>Франция</option>
+            <option>Испания</option>
+            <option>Турция</option>
+            <option>ОАЭ</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Рубрика -->
-      <div class="chip">
-        <label>Рубрика</label>
-        <input id="fCategory" type="text" placeholder="техника, красота…" style="width:120px" />
+      <!-- Группа 3: Аудитория -->
+      <div class="filter-group">
+        <h3 class="filter-group-title"><i class="fas fa-users"></i> Аудитория</h3>
+
+        <div class="chip">
+          <label>Пол аудитории</label>
+          <select id="fAudienceGender">
+            <option value="">Любой</option>
+            <option value="male">Мужской</option>
+            <option value="female">Женский</option>
+            <option value="mixed">Смешанный</option>
+          </select>
+        </div>
+
+        <div class="chip">
+          <label>Возраст аудитории</label>
+          <select id="fAudienceAge">
+            <option value="">Любой</option>
+            <option value="13-17">13-17</option>
+            <option value="18-24">18-24</option>
+            <option value="25-34">25-34</option>
+            <option value="35-44">35-44</option>
+            <option value="45+">45+</option>
+          </select>
+        </div>
+
+        <div class="chip">
+          <label>Страна аудитории</label>
+          <select id="fAudienceCountry">
+            <option value="">Любая</option>
+            <option>Россия</option>
+            <option>США</option>
+            <option>Великобритания</option>
+            <option>Германия</option>
+          </select>
+        </div>
+
+        <div class="chip">
+          <label>Язык аудитории</label>
+          <select id="fAudienceLanguage">
+            <option value="">Любой</option>
+            <option>Русский</option>
+            <option>Аngлийский</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Гео аудитории -->
-      <div class="chip">
-        <label>Гео аудитории</label>
-        <select id="fAudienceGeo">
-          <option value="">Любая</option>
-          <option>RU</option>
-          <option>EN</option>
-          <option>ES</option>
-          <option>FR</option>
-          <option>CN</option>
-        </select>
+      <!-- Группа 4: Контент и контакты -->
+      <div class="filter-group">
+        <h3 class="filter-group-title"><i class="fas fa-hashtag"></i> Контент и контакты</h3>
+
+        <div class="chip">
+          <label>Поиск по ключевым словам</label>
+          <input id="fKeywords" type="search" placeholder="темы, ключевые слова..." style="width:180px" />
+        </div>
+
+        <div class="chip">
+          <label>Поиск по bio</label>
+          <input id="fBio" type="search" placeholder="слова из описания..." style="width:150px" />
+        </div>
+
+        <div class="chip">
+          <label>Есть контакт</label>
+          <select id="fContactType">
+            <option value="">Любой контакт</option>
+            <option value="email">Email</option>
+            <option value="phone">Телефон</option>
+            <option value="telegram">Telegram</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="instagram_dm">Instagram DM</option>
+          </select>
+        </div>
+
+        <div class="chip">
+          <label>
+            <input type="checkbox" id="fVerifiedOnly" />
+            Только верифицированные
+          </label>
+        </div>
       </div>
 
-      <!-- Гео блогера -->
-      <div class="chip">
-        <label>Гео блогера</label>
-        <select id="fBloggerGeo">
-          <option value="">Любая</option>
-          <option>RU</option>
-          <option>EN</option>
-          <option>ES</option>
-          <option>FR</option>
-          <option>CN</option>
-        </select>
+      <!-- Группа 5: Похожие блогеры -->
+      <div class="filter-group">
+        <h3 class="filter-group-title"><i class="fas fa-compress-alt"></i> Похожие блогеры</h3>
+
+        <div class="chip">
+          <label>Похожие на</label>
+          <select id="fSimilarTo">
+            <option value="">Не выбрано</option>
+            <option value="influencer1">@popular_blogger</option>
+            <option value="influencer2">@top_creator</option>
+            <option value="influencer3">@famous_influencer</option>
+          </select>
+        </div>
       </div>
 
-      <!-- Возраст аудитории -->
-      <div class="chip">
-        <label>Возраст аудитории</label>
-        <select id="fAudienceAge">
-          <option value="">Любой</option>
-          <option value="13-17">13–17</option>
-          <option value="18-24">18–24</option>
-          <option value="25-34">25–34</option>
-          <option value="35-44">35–44</option>
-          <option value="45-64">45–64</option>
-          <option value="65+">65+</option>
-        </select>
-      </div>
-
-      <!-- Возраст блогера -->
-      <div class="chip">
-        <label>Возраст блогера</label>
-        <select id="fBloggerAge">
-          <option value="">Любой</option>
-          <option value="13-17">13–17</option>
-          <option value="18-24">18–24</option>
-          <option value="25-34">25–34</option>
-          <option value="35-44">35–44</option>
-          <option value="45-64">45–64</option>
-          <option value="65+">65+</option>
-        </select>
-      </div>
-
-      <!-- Пол аудитории -->
-      <div class="chip">
-        <label>Пол аудитории</label>
-        <select id="fAudienceGender">
-          <option value="">Любой</option>
-          <option value="male">Мужской</option>
-          <option value="female">Женский</option>
-        </select>
-      </div>
-
-      <!-- Пол блогера -->
-      <div class="chip">
-        <label>Пол блогера</label>
-        <select id="fBloggerGender">
-          <option value="">Любой</option>
-          <option value="male">Мужской</option>
-          <option value="female">Женский</option>
-        </select>
-      </div>
-
-      <!-- ER / Цена -->
-      <div class="chip">
-        <label>ER, %</label>
-        <input id="fErMin" type="number" placeholder="мин" min="0" max="100" step="0.1" style="width:80px" />
-        <span class="muted">—</span>
-        <input id="fErMax" type="number" placeholder="макс" min="1" max="100" step="0.1" style="width:80px" />
-      </div>
-
-      <div class="chip">
-        <label>Цена (USD)</label>
-        <input id="fPriceMin" type="number" placeholder="от" min="0" max="10000" step="100" style="width:100px" />
-        <span class="muted">—</span>
-        <input id="fPriceMax" type="number" placeholder="до" min="1" max="10000" step="100" style="width:100px" />
-      </div>
-
-      <!-- Поиск -->
-      <div class="chip">
-        <label>Поиск</label>
-        <input id="fQuery" type="search" placeholder="имя/ниша/теги…" style="width:150px" />
-      </div>
-
-      <button id="clearFilters" class="btn btn-secondary" type="button" style="margin-left:auto">Очистить фильтры</button>
+      <button id="clearFilters" class="btn btn-secondary" type="button" style="margin-left:auto">Очистить всё</button>
     </form>
 
-    <!-- Активные чипы -->
+    <!-- Активные фильтры -->
     <div id="activeChips" class="chips"></div>
 
-    <!-- Статистика + кнопки -->
-    <div class="row" style="justify-content:space-between;margin:10px 0">
-      <div class="muted">Результатов: <span id="resultsCount">0</span> · Выбрано: <span id="pickedCount">0</span></div>
+    <!-- Управление результатами (как в agency.html) -->
+    <div class="row" style="justify-content:space-between;margin:20px 0;align-items:center">
+      <div class="muted">Найдено: <span id="resultsCount2">0</span> · Выбрано: <span id="pickedCount2">0</span></div>
       <div class="row">
-        <button id="selectAll" class="btn btn-secondary" type="button">Выбрать все (фильтр)</button>
-        <button id="clearPicked" class="btn btn-secondary" type="button">Очистить выбор</button>
+        <button id="selectAll" class="btn btn-secondary" type="button">Выбрать все</button>
+        <button id="clearPicked" class="btn btn-secondary" type="button">Сбросить выбор</button>
+        <button id="exportResults" class="btn" type="button"><i class="fas fa-download"></i> Экспорт</button>
       </div>
     </div>
 

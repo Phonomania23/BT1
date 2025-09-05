@@ -1,6 +1,5 @@
 /* File: css/content-feed.css */
 
-/* Заголовок секции */
 .content-feed .cf-h3 {
   margin: 0 0 12px 0;
   color: var(--text);
@@ -8,13 +7,12 @@
   font-weight: 700;
 }
 
-/* Тулбар фильтров */
 .content-feed .cf-toolbar {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   background: var(--surface-2);
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 12px;
   margin-bottom: 14px;
@@ -33,55 +31,36 @@
   white-space: nowrap;
 }
 
-/* Контролы в тулбаре */
 .content-feed .cf-select,
 .content-feed .cf-input {
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--surface-3);
+  background: var(--surface);
   color: var(--text);
   padding: 8px 10px;
   font-size: 14px;
   min-width: 160px;
-  transition: var(--transition);
-  outline: none;
-  appearance: none;
-}
-.content-feed .cf-select:hover,
-.content-feed .cf-input:hover {
-  border-color: var(--accent);
-}
-.content-feed .cf-select:focus,
-.content-feed .cf-input:focus {
-  border-color: var(--primary);
-  box-shadow: var(--focus);
-  background: var(--surface-3);
-}
-.content-feed .cf-input::placeholder {
-  color: var(--text-muted);
 }
 
-/* Поиск шире */
 .content-feed .cf-search .cf-input {
   min-width: 260px;
 }
 
-/* Сетка карточек */
 .content-feed .cf-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 12px;
 }
+
 @media (max-width: 520px) {
   .content-feed .cf-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
 }
 
-/* Карточка контента */
 .content-feed .cf-card {
   background: var(--surface);
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: var(--shadow-2);
@@ -95,7 +74,6 @@
   border-color: var(--primary);
 }
 
-/* Превью */
 .content-feed .cf-thumb {
   position: relative;
   display: block;
@@ -111,14 +89,13 @@
   display: block;
 }
 
-/* Бейдж типа и длительность */
 .content-feed .cf-badge {
   position: absolute;
   top: 8px;
   left: 8px;
-  background: rgba(199, 255, 26, 0.14);
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
   color: var(--text);
-  border: 1px solid var(--surface-border);
+  border: 1px solid var(--border);
   backdrop-filter: blur(4px);
   padding: 2px 8px;
   border-radius: 999px;
@@ -130,7 +107,7 @@
   position: absolute;
   bottom: 8px;
   right: 8px;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0,0,0,.55);
   color: #fff;
   padding: 2px 6px;
   border-radius: 6px;
@@ -140,7 +117,6 @@
   gap: 6px;
 }
 
-/* Тело карточки */
 .content-feed .cf-body {
   padding: 10px;
 }
@@ -150,12 +126,11 @@
   font-weight: 600;
   color: var(--text);
   line-height: 1.3;
-  max-height: 2.6em; /* две строки */
+  max-height: 2.6em;     /* две строки */
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
-  margin: 0;
 }
 
 .content-feed .cf-meta {
@@ -173,39 +148,43 @@
   gap: 6px;
 }
 
-/* Пустое состояние */
 .content-feed .cf-empty {
   margin: 14px 0;
   padding: 14px;
   background: var(--surface-2);
-  border: 1px dashed var(--surface-border);
+  border: 1px dashed var(--border);
   border-radius: 10px;
   color: var(--text-muted);
   text-align: center;
 }
 
-/* Действия под сеткой */
 .content-feed .cf-actions {
   display: flex;
   justify-content: center;
   margin-top: 12px;
 }
 
-/* Важно: не переопределяем брендовую кнопку.
-   Только размеры/радиус — фон/цвет берём из .btn из base.css */
 .content-feed .btn {
   padding: 8px 14px;
   border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  border: 1px solid var(--primary);
+  cursor: pointer;
+  font-weight: 600;
+}
+.content-feed .btn:hover {
+  filter: brightness(0.95);
 }
 
 /* Цветовые нюансы по типам (необязательно, но приятно) */
-.content-feed .cf-card.type-video .cf-badge { background: rgba(30, 136, 229, 0.18); }
+.content-feed .cf-card.type-video .cf-badge { background: color-mix(in srgb, #1e88e5 18%, transparent); }
 .content-feed .cf-card.type-shorts .cf-badge,
-.content-feed .cf-card.type-short  .cf-badge { background: rgba(239, 83, 80, 0.18); }
-.content-feed .cf-card.type-reels  .cf-badge { background: rgba(171, 71, 188, 0.18); }
+.content-feed .cf-card.type-short .cf-badge { background: color-mix(in srgb, #ef5350 18%, transparent); }
+.content-feed .cf-card.type-reels .cf-badge { background: color-mix(in srgb, #ab47bc 18%, transparent); }
 .content-feed .cf-card.type-stories .cf-badge,
-.content-feed .cf-card.type-story  .cf-badge { background: rgba(38, 166, 154, 0.18); }
-.content-feed .cf-card.type-live   .cf-badge { background: rgba(67, 160, 71, 0.18); }
-.content-feed .cf-card.type-photo  .cf-badge,
-.content-feed .cf-card.type-image  .cf-badge { background: rgba(141, 110, 99, 0.18); }
-.content-feed .cf-card.type-post   .cf-badge { background: rgba(92, 107, 192, 0.18); }
+.content-feed .cf-card.type-story .cf-badge { background: color-mix(in srgb, #26a69a 18%, transparent); }
+.content-feed .cf-card.type-live .cf-badge { background: color-mix(in srgb, #43a047 18%, transparent); }
+.content-feed .cf-card.type-photo .cf-badge,
+.content-feed .cf-card.type-image .cf-badge { background: color-mix(in srgb, #8d6e63 18%, transparent); }
+.content-feed .cf-card.type-post .cf-badge { background: color-mix(in srgb, #5c6bc0 18%, transparent); }
