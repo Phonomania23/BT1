@@ -49,7 +49,6 @@
             background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
             color: white;
             margin-bottom: 40px;
-            border-radius: 0 0 24px 24px;
         }
         
         .hero .logo {
@@ -339,7 +338,27 @@
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px solid var(--surface-border);
-            justify-content: flex-end;
+        }
+        
+        /* Стили для иконок действий */
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 5px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            color: #888;
+        }
+        
+        .toggle-favorite.active {
+            color: var(--primary);
+        }
+        
+        .btn-icon:hover {
+            color: var(--primary);
+            background-color: rgba(138, 43, 226, 0.1);
         }
         
         /* Отзывы */
@@ -641,7 +660,9 @@
                     </div>
                     <p>Специализируется на обзорах гаджетов и техники. Высокий engagement rate.</p>
                     <div class="blogger-demo-actions">
-                        <a href="creator.html?id=1" class="btn-hero-secondary" style="padding: 8px 16px; font-size: 14px;">Открыть анкету</a>
+                        <button class="btn-icon toggle-favorite" data-blogger-id="1" title="В избранное">☆</button>
+                        <button class="btn-icon add-to-folder-btn" data-blogger-id="1" title="Добавить в папку">📁</button>
+                        <a href="creator.html?id=1" class="btn-icon" title="Открыть анкету">📋</a>
                     </div>
                 </div>
 
@@ -655,7 +676,9 @@
                     </div>
                     <p>Эксперт в beauty-индустрии. Создает качественный контент о косметике.</p>
                     <div class="blogger-demo-actions">
-                        <a href="creator.html?id=2" class="btn-hero-secondary" style="padding: 8px 16px; font-size: 14px;">Открыть анкету</a>
+                        <button class="btn-icon toggle-favorite" data-blogger-id="2" title="В избранное">☆</button>
+                        <button class="btn-icon add-to-folder-btn" data-blogger-id="2" title="Добавить в папку">📁</button>
+                        <a href="creator.html?id=2" class="btn-icon" title="Открыть анкету">📋</a>
                     </div>
                 </div>
 
@@ -669,7 +692,9 @@
                     </div>
                     <p>Ведущий гейминг-канала. Обзоры игр и игрового оборудования.</p>
                     <div class="blogger-demo-actions">
-                        <a href="creator.html?id=3" class="btn-hero-secondary" style="padding: 8px 16px; font-size: 14px;">Открыть анкету</a>
+                        <button class="btn-icon toggle-favorite" data-blogger-id="3" title="В избранное">☆</button>
+                        <button class="btn-icon add-to-folder-btn" data-blogger-id="3" title="Добавить в папку">📁</button>
+                        <a href="creator.html?id=3" class="btn-icon" title="Открыть анкету">📋</a>
                     </div>
                 </div>
             </div>
@@ -770,6 +795,35 @@
                 // Автофокус
                 const ln = document.getElementById('loginName');
                 if (ln) setTimeout(() => ln.focus(), 500);
+
+                // Логика для кнопок избранного
+                document.querySelectorAll('.toggle-favorite').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        this.classList.toggle('active');
+                        const bloggerId = this.getAttribute('data-blogger-id');
+                        const isActive = this.classList.contains('active');
+                        
+                        // Сохраняем состояние в localStorage
+                        const favorites = JSON.parse(localStorage.getItem('favoriteBloggers') || '{}');
+                        favorites[bloggerId] = isActive;
+                        localStorage.setItem('favoriteBloggers', JSON.stringify(favorites));
+                        
+                        this.title = isActive ? 'Удалить из избранного' : 'В избранное';
+                    });
+                });
+                
+                // Восстанавливаем состояние избранного
+                const favorites = JSON.parse(localStorage.getItem('favoriteBloggers') || '{}');
+                Object.keys(favorites).forEach(bloggerId => {
+                    if (favorites[bloggerId]) {
+                        const btn = document.querySelector(`.toggle-favorite[data-blogger-id="${bloggerId}"]`);
+                        if (btn) {
+                            btn.classList.add('active');
+                            btn.title = 'Удалить из избранного';
+                        }
+                    }
+                });
             });
         })();
     </script>
