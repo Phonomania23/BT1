@@ -12,8 +12,9 @@
   <!-- Иконки как в agency.html -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  <!-- Стили карточек/фильтров: идентичны agency.html -->
+  <!-- Стили карточек/фильтров: КОПИЯ из agency.html -->
   <style>
+    /* ==== КОПИЯ ИЗ agency.html (начало) ==== */
     .filterbar {
       display: flex;
       flex-wrap: wrap;
@@ -23,7 +24,6 @@
       background: var(--surface-2);
       border-radius: 12px;
       border: 1px solid var(--surface-border);
-      align-items: flex-start;
     }
 
     .filter-group {
@@ -35,7 +35,6 @@
       border-radius: 8px;
       border: 1px solid var(--surface-border);
       margin-bottom: 12px;
-      width: 100%;
     }
     .filter-group-title {
       width: 100%;
@@ -63,16 +62,8 @@
       font-size: 14px;
       color: var(--text);
       white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
-
-    /* инпуты/селекты, кроме чекбокса */
-    .chip input[type="text"],
-    .chip input[type="number"],
-    .chip input[type="search"],
-    .chip select {
+    .chip input, .chip select {
       border: 1px solid var(--surface-border);
       border-radius: 6px;
       padding: 6px 8px;
@@ -80,39 +71,11 @@
       background: var(--surface);
       color: var(--text);
     }
-    .chip input[type="text"]:focus,
-    .chip input[type="number"]:focus,
-    .chip input[type="search"]:focus,
-    .chip select:focus {
+    .chip input:focus, .chip select:focus {
       outline: none;
       border-color: var(--accent);
       box-shadow: var(--focus);
       background: var(--surface-3);
-    }
-
-    /* компактный чекбокс «Только верифицированные» — без большого ободка */
-    .chip input[type="checkbox"]{
-      appearance: none;
-      width: 16px;
-      height: 16px;
-      border: 1px solid var(--surface-border);
-      border-radius: 4px;
-      background: var(--surface);
-      display: inline-grid;
-      place-items: center;
-      padding: 0;
-      margin: 0;
-    }
-    .chip input[type="checkbox"]:checked{
-      background: var(--primary);
-      border-color: var(--primary);
-    }
-    .chip input[type="checkbox"]:checked::after{
-      content:"";
-      width:9px;height:9px;
-      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="black" d="M4.5 9.2 1.8 6.5l.9-.9 1.8 1.8 4-4 .9.9-4.9 4.9Z"/></svg>') no-repeat center/contain;
-      background:#000;
-      display:block;
     }
 
     .chips {
@@ -191,16 +154,9 @@
     .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
     .muted{color:var(--text-muted)}
 
-    /* Сортировка (перенесена в самый низ, как в agency.html) */
-    .sort-options {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      margin: 10px 0 0 0;
-      width: 100%;
-    }
+    .sort-options { display: flex; gap: 8px; align-items: center; margin: 10px 0; }
     .sort-label { font-weight: 600; font-size: 14px; color: var(--text); }
-    .sort-buttons { display: flex; gap: 4px; flex-wrap: wrap; }
+    .sort-buttons { display: flex; gap: 4px; }
     .sort-btn {
       padding: 6px 12px; background: var(--surface-2); border: 1px solid var(--surface-border);
       border-radius: 6px; font-size: 13px; cursor: pointer; transition: var(--transition); color: var(--text);
@@ -225,6 +181,7 @@
     .contacts-dropdown-content a{ color:var(--text); padding:8px 12px; text-decoration:none; display:block; border-radius:4px; font-size:14px;}
     .contacts-dropdown-content a:hover{ background:var(--surface-3); }
     .contacts-dropdown:hover .contacts-dropdown-content{ display:block; }
+    /* ==== КОПИЯ ИЗ agency.html (конец) ==== */
   </style>
 
   <!-- Скрипты (ВАЖЕН ПОРЯДОК) -->
@@ -234,7 +191,7 @@
   <script defer src="../js/message-templates.js?v=1"></script>
   <script defer src="../js/ai-brief.js?v=1"></script>
 
-  <!-- Инициализация шага «Подбор» со строго той же системой фильтров, что и в agency.html -->
+  <!-- Инициализация шага «Подбор» со СТРОГО той же системой фильтров, что и в agency.html -->
   <script defer>
     // Этот init вызывается роутером на шаге 1
     window.initPickStep = function(){
@@ -242,7 +199,7 @@
       const appState = {
         selectedBloggers: JSON.parse(localStorage.getItem('selectedBloggers')||'[]'),
         currentSort: 'relevance',
-        // Моки (1:1 с agency.html)
+        // Данные блогеров (точно как в agency.html — имитация)
         mockBloggers: [
           { 
             id: 1, name: "Иван Петров", username: "tech_review", platform: "YouTube", 
@@ -287,12 +244,16 @@
         ]
       };
 
+      // Хелперы быстрого доступа
       const $ = (sel) => document.querySelector(sel);
 
+      // Навесим обработчики и первичный рендер
       setupEventListeners();
       renderBloggersList();
       updateSelectionCount();
       updateActiveChips();
+
+      /* ===== РОВНО ТАКАЯ ЖЕ ЛОГИКА, КАК В agency.html ===== */
 
       function setupEventListeners() {
         // Фильтры
@@ -310,13 +271,13 @@
           el.addEventListener('change', applyFilters);
         });
 
-        // Чекбокс
+        // Чекбоксы
         ['fVerifiedOnly'].forEach(id => {
           const el = document.getElementById(id);
           if (el) el.addEventListener('change', applyFilters);
         });
 
-        // Кнопки управления
+        // Кнопки
         document.getElementById('clearFilters')?.addEventListener('click', clearAllFilters);
         document.getElementById('selectAll')?.addEventListener('click', selectAllFiltered);
         document.getElementById('clearPicked')?.addEventListener('click', clearSelectedBloggers);
@@ -345,13 +306,6 @@
           if (input.type === 'checkbox') input.checked = false;
           else input.value = '';
         });
-
-        // сброс сортировки к «релевантности»
-        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-        const rel = document.querySelector('.sort-btn[data-sort="relevance"]');
-        if (rel) rel.classList.add('active');
-        appState.currentSort = 'relevance';
-
         applyFilters();
       }
 
@@ -390,6 +344,7 @@
         if (!listContainer) return;
         listContainer.innerHTML = '';
 
+        // Значения фильтров (как в agency.html)
         const filters = {
           platform: $('#fPlatform')?.value || '',
           followersMin: parseInt($('#followersMin')?.value) || 0,
@@ -453,6 +408,7 @@
 
           if (filters.bio && !(b.bio||'').toLowerCase().includes(filters.bio)) return false;
 
+          // lastPost: 1,7,30 дней
           if (filters.lastPost) {
             const days = parseInt(filters.lastPost, 10);
             const d = new Date();
@@ -460,6 +416,7 @@
             if (new Date(b.last_post) < cutoff) return false;
           }
 
+          // similarTo: демо — пропускаем фильтрацию (нет связей в моках)
           return true;
         });
 
@@ -474,7 +431,7 @@
             break;
         }
 
-        // Счётчики (опционально присутствуют на странице)
+        // Счётчики
         const rc1 = document.getElementById('resultsCount'); if (rc1) rc1.textContent = filtered.length;
         const rc2 = document.getElementById('resultsCount2'); if (rc2) rc2.textContent = filtered.length;
         const pc2 = document.getElementById('pickedCount2'); if (pc2) pc2.textContent = appState.selectedBloggers.length;
@@ -558,7 +515,8 @@
         else appState.selectedBloggers.splice(i,1);
         localStorage.setItem('selectedBloggers', JSON.stringify(appState.selectedBloggers));
         updateSelectionCount();
-        renderBloggersList(); // обновить подсветку/чекбоксы
+        // Перерисуем, чтобы подсветка/чекбокс обновились
+        renderBloggersList();
       };
 
       function updateSelectionCount(){
@@ -669,11 +627,24 @@
 
   <!-- ================== ШАБЛОНЫ ШАГОВ ================== -->
 
-  <!-- Шаг 1: Подбор — фильтры и сортировка 1:1 с agency.html (сортировка в самом низу) -->
+  <!-- Шаг 1: Подбор — разметка фильтров СОВПАДАЕТ с agency.html -->
   <template id="tpl-1-pick">
     <h2>Подбор блогеров</h2>
 
-    <!-- ФИЛЬТР-БАР -->
+    <!-- Опции сортировки (как в agency.html) -->
+    <div class="sort-options">
+      <span class="sort-label">Сортировка:</span>
+      <div class="sort-buttons">
+        <button class="sort-btn" data-sort="followers">Подписчики</button>
+        <button class="sort-btn" data-sort="avg_views">Просмотры</button>
+        <button class="sort-btn" data-sort="er">ER</button>
+        <button class="sort-btn active" data-sort="relevance">Релевантность</button>
+        <span class="muted">Найдено: <span id="resultsCount" class="count">0</span></span>
+        <span class="muted">Выбрано: <span id="pickedCount" class="count">0</span></span>
+      </div>
+    </div>
+
+    <!-- ФИЛЬТР-БАР (1:1 с agency.html) -->
     <form id="filtersForm" class="filterbar" onsubmit="return false">
       <!-- Группа 1: Платформа и статистика -->
       <div class="filter-group">
@@ -741,7 +712,7 @@
           <label>Пол блогера</label>
           <select id="fBloggerGender">
             <option value="">Любой</option>
-            <option value="male">Мужской</option>
+            <option value="male">Мужский</option>
             <option value="female">Женский</option>
           </select>
         </div>
@@ -792,7 +763,7 @@
           <label>Пол аудитории</label>
           <select id="fAudienceGender">
             <option value="">Любой</option>
-            <option value="male">Мужской</option>
+            <option value="male">Мужский</option>
             <option value="female">Женский</option>
             <option value="mixed">Смешанный</option>
           </select>
@@ -857,10 +828,10 @@
           </select>
         </div>
 
-        <div class="chip" style="gap:10px;">
+        <div class="chip">
           <label>
             <input type="checkbox" id="fVerifiedOnly" />
-            <span>Только верифицированные</span>
+            Только верифицированные
           </label>
         </div>
       </div>
@@ -880,24 +851,13 @@
         </div>
       </div>
 
-      <!-- Сортировка — строго под «Похожие блогеры», как в agency.html -->
-      <div class="sort-options">
-        <span class="sort-label">Сортировка:</span>
-        <div class="sort-buttons">
-          <button class="sort-btn" data-sort="followers">Подписчики</button>
-          <button class="sort-btn" data-sort="avg_views">Просмотры</button>
-          <button class="sort-btn" data-sort="er">ER</button>
-          <button class="sort-btn active" data-sort="relevance">Релевантность</button>
-        </div>
-
-        <button id="clearFilters" class="btn btn-secondary" type="button" style="margin-left:auto">Очистить всё</button>
-      </div>
+      <button id="clearFilters" class="btn btn-secondary" type="button" style="margin-left:auto">Очистить всё</button>
     </form>
 
     <!-- Активные фильтры -->
     <div id="activeChips" class="chips"></div>
 
-    <!-- Управление результатами -->
+    <!-- Управление результатами (как в agency.html) -->
     <div class="row" style="justify-content:space-between;margin:20px 0;align-items:center">
       <div class="muted">Найдено: <span id="resultsCount2">0</span> · Выбрано: <span id="pickedCount2">0</span></div>
       <div class="row">
