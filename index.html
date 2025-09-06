@@ -13,26 +13,26 @@
         }
         
         :root {
-            --primary: #8A2BE2;
-            --primary-hover: #7329c5;
+            --primary: #1DB954; /* Ярко-зеленый как в creator.html */
+            --primary-hover: #1aa34a;
             --primary-ink: #fff;
-            --accent: #6c3fa0;
-            --surface: #fff;
-            --surface-2: #f8f9fa;
-            --surface-border: #e9ecef;
-            --text-on-surface: #212529;
-            --text-muted: #6c757d;
-            --border: #dee2e6;
-            --shadow-2: 0 4px 12px rgba(0,0,0,0.05);
-            --shadow-3: 0 6px 16px rgba(0,0,0,0.08);
-            --shadow-4: 0 10px 25px rgba(0,0,0,0.12);
+            --accent: #191414; /* Темный фон как в creator.html */
+            --surface: #121212;
+            --surface-2: #181818;
+            --surface-border: #282828;
+            --text-on-surface: #ffffff;
+            --text-muted: #b3b3b3;
+            --border: #282828;
+            --shadow-2: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-3: 0 6px 16px rgba(0,0,0,0.4);
+            --shadow-4: 0 10px 25px rgba(0,0,0,0.5);
         }
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background-color: #f8f9fa;
+            color: #ffffff;
+            background-color: var(--accent);
             scroll-behavior: smooth;
         }
         
@@ -46,7 +46,7 @@
         .hero {
             text-align: center;
             padding: 100px 0 60px;
-            background: linear-gradient(135deg, var(--accent) 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1DB954 0%, #191414 100%);
             color: white;
             margin-bottom: 40px;
         }
@@ -65,7 +65,7 @@
         }
         
         .hero .lead {
-            color: rgba(255, 255, 255, 0.95);
+            color: rgba(255, 255, 255, 0.9);
             margin-top: 15px;
             font-size: 1.3em;
             max-width: 700px;
@@ -95,13 +95,13 @@
             font-weight: 700;
             text-decoration: none;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(138, 43, 226, 0.3);
+            box-shadow: 0 4px 12px rgba(29, 185, 84, 0.4);
         }
         
         .btn-hero-primary:hover {
             background: var(--primary-hover);
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(138, 43, 226, 0.4);
+            box-shadow: 0 6px 16px rgba(29, 185, 84, 0.5);
         }
         
         .btn-hero-secondary {
@@ -218,7 +218,7 @@
         .feature-card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-4);
-            border-color: var(--accent);
+            border-color: var(--primary);
         }
         
         .feature-icon {
@@ -236,15 +236,14 @@
         }
         
         .feature-card p {
-            color: var(--text-on-surface);
-            opacity: 0.9;
+            color: var(--text-muted);
             line-height: 1.6;
             margin: 0;
         }
         
         /* Статистика */
         .stats-section {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
             padding: 50px 0;
             margin: 50px 0;
             border-radius: 20px;
@@ -312,7 +311,7 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, #1aa34a 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -338,6 +337,7 @@
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px solid var(--surface-border);
+            position: relative;
         }
         
         /* Стили для иконок действий */
@@ -346,10 +346,19 @@
             border: none;
             cursor: pointer;
             font-size: 1.2em;
-            padding: 5px;
-            border-radius: 4px;
+            padding: 8px;
+            border-radius: 50%;
             transition: all 0.2s ease;
-            color: #888;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+        }
+        
+        .toggle-favorite {
+            color: var(--text-muted);
         }
         
         .toggle-favorite.active {
@@ -358,7 +367,46 @@
         
         .btn-icon:hover {
             color: var(--primary);
-            background-color: rgba(138, 43, 226, 0.1);
+            background-color: rgba(29, 185, 84, 0.1);
+        }
+        
+        /* Меню добавления в папку */
+        .folder-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: var(--shadow-3);
+            z-index: 10;
+            width: 200px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .folder-menu.show {
+            display: block;
+        }
+        
+        .folder-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .folder-item:hover {
+            background-color: rgba(29, 185, 84, 0.1);
+            color: var(--primary);
+        }
+        
+        .folder-item i {
+            font-size: 1.1em;
         }
         
         /* Отзывы */
@@ -379,7 +427,7 @@
         .testimonial-card::before {
             content: '"';
             font-size: 5em;
-            color: var(--accent);
+            color: var(--primary);
             opacity: 0.15;
             position: absolute;
             top: 15px;
@@ -443,9 +491,9 @@
         }
         
         .field input:focus, .field select:focus {
-            border-color: var(--accent);
+            border-color: var(--primary);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(155, 81, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.2);
         }
         
         .btn-large {
@@ -663,6 +711,13 @@
                         <button class="btn-icon toggle-favorite" data-blogger-id="1" title="В избранное">☆</button>
                         <button class="btn-icon add-to-folder-btn" data-blogger-id="1" title="Добавить в папку">📁</button>
                         <a href="creator.html?id=1" class="btn-icon" title="Открыть анкету">📋</a>
+                        
+                        <div class="folder-menu" id="folder-menu-1">
+                            <div class="folder-item" data-folder-id="1"><i>📁</i> Избранное</div>
+                            <div class="folder-item" data-folder-id="2"><i>📁</i> Для сотрудничества</div>
+                            <div class="folder-item" data-folder-id="3"><i>📁</i> Рассмотреть позже</div>
+                            <div class="folder-item" data-folder-id="4"><i>➕</i> Новая папка</div>
+                        </div>
                     </div>
                 </div>
 
@@ -679,6 +734,13 @@
                         <button class="btn-icon toggle-favorite" data-blogger-id="2" title="В избранное">☆</button>
                         <button class="btn-icon add-to-folder-btn" data-blogger-id="2" title="Добавить в папку">📁</button>
                         <a href="creator.html?id=2" class="btn-icon" title="Открыть анкету">📋</a>
+                        
+                        <div class="folder-menu" id="folder-menu-2">
+                            <div class="folder-item" data-folder-id="1"><i>📁</i> Избранное</div>
+                            <div class="folder-item" data-folder-id="2"><i>📁</i> Для сотрудничества</div>
+                            <div class="folder-item" data-folder-id="3"><i>📁</i> Рассмотреть позже</div>
+                            <div class="folder-item" data-folder-id="4"><i>➕</i> Новая папка</div>
+                        </div>
                     </div>
                 </div>
 
@@ -695,6 +757,13 @@
                         <button class="btn-icon toggle-favorite" data-blogger-id="3" title="В избранное">☆</button>
                         <button class="btn-icon add-to-folder-btn" data-blogger-id="3" title="Добавить в папку">📁</button>
                         <a href="creator.html?id=3" class="btn-icon" title="Открыть анкету">📋</a>
+                        
+                        <div class="folder-menu" id="folder-menu-3">
+                            <div class="folder-item" data-folder-id="1"><i>📁</i> Избранное</div>
+                            <div class="folder-item" data-folder-id="2"><i>📁</i> Для сотрудничества</div>
+                            <div class="folder-item" data-folder-id="3"><i>📁</i> Рассмотреть позже</div>
+                            <div class="folder-item" data-folder-id="4"><i>➕</i> Новая папка</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -734,7 +803,7 @@
             <button id="loginBtn" class="btn-large" type="button">Продолжить</button>
 
             <div style="text-align: center; margin-top: 25px;">
-                <p style="color: var(--text-on-surface); opacity: 0.9;">Или перейдите сразу к <a href="deal/index.html#/1-pick" style="color: var(--accent); text-decoration: none; font-weight: 600;">подбору блогеров →</a></p>
+                <p style="color: var(--text-muted);">Или перейдите сразу к <a href="deal/index.html#/1-pick" style="color: var(--primary); text-decoration: none; font-weight: 600;">подбору блогеров →</a></p>
             </div>
         </section>
     </main>
@@ -810,6 +879,53 @@
                         localStorage.setItem('favoriteBloggers', JSON.stringify(favorites));
                         
                         this.title = isActive ? 'Удалить из избранного' : 'В избранное';
+                        this.innerHTML = isActive ? '★' : '☆';
+                    });
+                });
+                
+                // Логика для кнопок добавления в папку
+                document.querySelectorAll('.add-to-folder-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const bloggerId = this.getAttribute('data-blogger-id');
+                        const menu = document.getElementById(`folder-menu-${bloggerId}`);
+                        
+                        // Закрываем все открытые меню
+                        document.querySelectorAll('.folder-menu').forEach(m => {
+                            if (m !== menu) m.classList.remove('show');
+                        });
+                        
+                        // Переключаем текущее меню
+                        menu.classList.toggle('show');
+                    });
+                });
+                
+                // Закрытие меню при клике вне его
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.folder-menu') && !e.target.closest('.add-to-folder-btn')) {
+                        document.querySelectorAll('.folder-menu').forEach(menu => {
+                            menu.classList.remove('show');
+                        });
+                    }
+                });
+                
+                // Обработка выбора папки
+                document.querySelectorAll('.folder-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const folderId = this.getAttribute('data-folder-id');
+                        const menu = this.closest('.folder-menu');
+                        const bloggerId = menu.id.split('-')[2];
+                        
+                        // Логика добавления в папку
+                        console.log(`Блогер ${bloggerId} добавлен в папку ${folderId}`);
+                        
+                        // Закрываем меню
+                        menu.classList.remove('show');
+                        
+                        // Показываем уведомление
+                        alert('Блогер успешно добавлен в папку!');
                     });
                 });
                 
@@ -821,6 +937,7 @@
                         if (btn) {
                             btn.classList.add('active');
                             btn.title = 'Удалить из избранного';
+                            btn.innerHTML = '★';
                         }
                     }
                 });
