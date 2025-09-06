@@ -1,464 +1,956 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Bloggers.tools — Фильтры</title>
-
-  <!-- Базовые стили проекта -->
-  <link rel="stylesheet" href="/css/base.css" />
-  <link rel="stylesheet" href="/css/layout.css" />
-
-  <style>
-    /* === Палитра (как на creator.html) ===================================== */
-    :root{
-      --bg:#0D0F11;
-      --text:#E7EBF0;
-      --text-muted:#99A3AD;
-
-      --surface:#15181B;
-      --surface-2:#1A1E22;
-      --surface-3:#20262B;
-
-      --surface-border:#2A3137;
-      --border:#2A3137;
-
-      --primary:#C7FF1A;
-      --primary-ink:#081100;
-
-      --radius:14px;
-      --radius-sm:10px;
-      --shadow:0 8px 30px rgba(0,0,0,.35);
-      --trans:.2s ease;
-    }
-
-    html,body{background:var(--bg);color:var(--text)}
-
-    /* === Каркас страницы =================================================== */
-    .page {
-      max-width: 1180px;
-      margin: 32px auto 80px;
-      padding: 0 16px;
-    }
-
-    .filters {
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px;
-    }
-
-    .section {
-      border: 1px solid var(--surface-border);
-      background: var(--surface-2);
-      border-radius: var(--radius);
-      padding: 18px;
-      margin-bottom: 14px;
-    }
-
-    .section__title {
-      display:flex;align-items:center;gap:10px;
-      font-weight: 700;
-      margin: -2px 0 14px;
-      color: var(--text);
-    }
-    .section__title i{
-      width: 10px;height:10px;border-radius:50%;
-      background: var(--primary);
-      box-shadow: 0 0 10px rgba(199,255,26,.45);
-      display:inline-block;
-    }
-
-    /* === Сетка контролов =================================================== */
-    .row{
-      display:grid;
-      grid-template-columns: repeat(12,1fr);
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .ctrl{ grid-column: span 3; }
-    .ctrl--2 { grid-column: span 2; }
-    .ctrl--4 { grid-column: span 4; }
-    .ctrl--6 { grid-column: span 6; }
-    .ctrl--12 { grid-column: 1 / -1; }
-
-    @media (max-width: 1024px){
-      .ctrl,.ctrl--2,.ctrl--4{grid-column: span 6}
-      .ctrl--6,.ctrl--12{grid-column: 1 / -1}
-    }
-    @media (max-width: 640px){
-      .ctrl,.ctrl--2,.ctrl--4,.ctrl--6{grid-column: 1 / -1}
-    }
-
-    .label{
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-      display:block;
-    }
-    .field{
-      display:flex;align-items:center;gap:8px;
-      background: var(--surface-3);
-      border:1px solid var(--surface-border);
-      border-radius: var(--radius-sm);
-      padding:8px 10px;
-    }
-    .field input[type="text"],
-    .field input[type="number"],
-    .field select{
-      background: transparent;
-      color: var(--text);
-      border: 0;
-      outline: none;
-      height: 28px;
-      width: 100%;
-      font-size: 14px;
-    }
-    .suffix{
-      font-size:12px;color:var(--text-muted);white-space:nowrap
-    }
-
-    /* Диапазоны (от/до) */
-    .range{
-      display:grid;grid-template-columns:1fr 18px 1fr auto;gap:8px;align-items:center
-    }
-    .sep{color:var(--text-muted);text-align:center}
-
-    /* === Чекбокс «Только верифицированные» ================================ */
-    .checkbox {
-      display:flex; align-items:center; gap:8px;
-      background: var(--surface-3);
-      border:1px solid var(--surface-border);
-      border-radius: var(--radius-sm);
-      padding:8px 10px;
-      height: 44px;
-    }
-    .checkbox input{
-      appearance:none;
-      width:16px;height:16px;
-      border:1px solid #5a646e;
-      border-radius:4px;
-      background:transparent;
-      display:grid;place-items:center;
-      margin:0;
-      outline:none;
-    }
-    .checkbox input:checked{
-      background: var(--primary);
-      border-color: var(--primary);
-    }
-    .checkbox input:checked::after{
-      content:"";
-      width:9px;height:9px;
-      mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path fill="black" d="M4.5 9.2 1.8 6.5l.9-.9 1.8 1.8 4-4 .9.9-4.9 4.9Z"/></svg>') no-repeat center/contain;
-      background:#000;
-      display:block;
-    }
-    .checkbox span{font-size:14px;color:var(--text)}
-
-    /* === Похожие блогеры =================================================== */
-    .hint{
-      font-size:12px;color:var(--text-muted);
-      margin-top:6px
-    }
-
-    /* === Сортировка (внизу) =============================================== */
-    .sort {
-      display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-      background: var(--surface-2);
-      border: 1px solid var(--surface-border);
-      border-radius: var(--radius);
-      padding:14px 16px;
-      margin-top: 14px;
-    }
-    .sort__label{font-weight:700;color:var(--text)}
-    .segmented{
-      display:flex;gap:8px;flex-wrap:wrap;
-      background: var(--surface-3);
-      border:1px solid var(--surface-border);
-      padding:6px; border-radius: 12px;
-    }
-    .segmented input{ display:none }
-    .segmented label{
-      padding:8px 12px;
-      border-radius:10px;
-      color:var(--text);
-      cursor:pointer;
-      user-select:none;
-      transition:var(--trans);
-    }
-    .segmented input:checked + label{
-      background: var(--primary);
-      color: var(--primary-ink);
-    }
-
-    /* === Очистить всё (правый низ) ======================================== */
-    .clear-all{
-      position: sticky;
-      float: right;
-      bottom: -1px; /* чтобы всегда был виден внизу секции */
-      align-self: flex-end;
-      margin-top: 10px;
-      border-radius: 14px;
-      border: 1px solid var(--primary);
-      color: var(--text);
-      background: transparent;
-      padding: 14px 16px;
-      transition: var(--trans);
-    }
-    .clear-all:hover{ background: rgba(199,255,26,.06) }
-  </style>
-
-  <script defer src="/js/include.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloggers.tools — Платформа для collaboration брендов и блогеров</title>
+    <style>
+        /* Базовые сбросы стилей */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg: #0D0F11;
+            --text: #E7EBF0;
+            --text-muted: #99A3AD;
+            --surface: #15181B;
+            --surface-2: #1A1E22;
+            --surface-3: #20262B;
+            --surface-border: #2A3137;
+            --border: #2A3137;
+            --primary: #C7FF1A;
+            --primary-ink: #081100;
+            --accent: #B7FF3C;
+            --primary-hover: #d1ff4d;
+            --shadow-2: 0 4px 12px rgba(0,0,0,0.3);
+            --shadow-3: 0 6px 16px rgba(0,0,0,0.4);
+            --shadow-4: 0 10px 25px rgba(0,0,0,0.5);
+            --focus: 0 0 0 3px rgba(199,255,26,.25);
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            scroll-behavior: smooth;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Герой секция */
+        .hero {
+            text-align: center;
+            padding: 100px 0 60px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--bg) 100%);
+            color: var(--primary-ink);
+            margin-bottom: 40px;
+        }
+        
+        .hero .logo {
+            height: 80px;
+            margin-bottom: 25px;
+            filter: brightness(0) invert(0);
+        }
+        
+        .hero h1 {
+            font-size: 2.8rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            font-weight: 800;
+            color: var(--primary-ink);
+        }
+        
+        .hero .lead {
+            color: rgba(8, 17, 0, 0.9);
+            margin-top: 15px;
+            font-size: 1.3em;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+        
+        .hero-cta {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 30px auto;
+            max-width: 500px;
+        }
+        
+        .btn-hero-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: var(--primary-ink);
+            border-radius: 16px;
+            padding: 18px 20px;
+            font-size: 18px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(199, 255, 26, 0.4);
+            border: none;
+        }
+        
+        .btn-hero-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(199, 255, 26, 0.5);
+        }
+        
+        .btn-hero-secondary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(199, 255, 26, 0.15);
+            color: var(--primary-ink);
+            border: 1px solid rgba(199, 255, 26, 0.3);
+            border-radius: 16px;
+            padding: 18px 20px;
+            font-size: 18px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-hero-secondary:hover {
+            background: rgba(199, 255, 26, 0.25);
+            border-color: rgba(199, 255, 26, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .hero-preview {
+            background: rgba(199, 255, 26, 0.1);
+            border: 1px solid rgba(199, 255, 26, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 30px;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--primary-ink);
+        }
+        
+        .hero-preview:hover {
+            background: rgba(199, 255, 26, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .links {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .links .link {
+            color: var(--primary-ink);
+            text-decoration: none;
+            padding: 10px 18px;
+            border: 1px solid rgba(199, 255, 26, 0.3);
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(199, 255, 26, 0.15);
+        }
+        
+        .links .link:hover {
+            background: rgba(199, 255, 26, 0.25);
+            border-color: rgba(199, 255, 26, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        /* Секции */
+        section {
+            padding: 60px 0;
+        }
+        
+        h2.section-title {
+            text-align: center;
+            position: relative;
+            padding-bottom: 25px;
+            margin-bottom: 40px;
+            font-size: 2.2rem;
+            color: var(--text);
+            font-weight: 800;
+        }
+        
+        h2.section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        
+        /* Карточки возможностей */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 28px;
+            margin: 50px 0;
+        }
+        
+        .feature-card {
+            background: var(--surface);
+            padding: 28px;
+            border-radius: 16px;
+            border: 1px solid var(--surface-border);
+            box-shadow: var(--shadow-2);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-4);
+            border-color: var(--primary);
+        }
+        
+        .feature-icon {
+            font-size: 54px;
+            margin-bottom: 20px;
+            display: block;
+            opacity: 0.9;
+        }
+        
+        .feature-card h3 {
+            color: var(--text);
+            margin: 0 0 16px 0;
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+        
+        .feature-card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin: 0;
+        }
+        
+        /* Статистика */
+        .stats-section {
+            background: linear-gradient(135deg, var(--surface-2) 0%, var(--surface-3) 100%);
+            padding: 50px 0;
+            margin: 50px 0;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 28px;
+            text-align: center;
+        }
+        
+        .stat-item {
+            padding: 25px;
+        }
+        
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: var(--text);
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        /* Карточки блогеров */
+        .bloggers-showcase {
+            margin: 50px 0;
+        }
+        
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .blogger-demo-card {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--surface-border);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-2);
+        }
+        
+        .blogger-demo-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-3);
+        }
+        
+        .blogger-demo-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .blogger-demo-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-ink);
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .blogger-demo-info h4 {
+            margin: 0;
+            color: var(--text);
+            font-size: 1.1em;
+        }
+        
+        .blogger-demo-stats {
+            color: var(--text-muted);
+            font-size: 0.9em;
+        }
+        
+        .blogger-demo-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--surface-border);
+            position: relative;
+        }
+        
+        /* Стили для иконок действий */
+        .btn-icon {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+        }
+        
+        .toggle-favorite {
+            color: var(--text-muted);
+        }
+        
+        .toggle-favorite.active {
+            color: var(--primary);
+        }
+        
+        .btn-icon:hover {
+            color: var(--primary);
+            background-color: rgba(199, 255, 26, 0.1);
+        }
+        
+        /* Меню добавления в папку */
+        .folder-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--surface-border);
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: var(--shadow-3);
+            z-index: 10;
+            width: 200px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .folder-menu.show {
+            display: block;
+        }
+        
+        .folder-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text);
+        }
+        
+        .folder-item:hover {
+            background-color: rgba(199, 255, 26, 0.1);
+            color: var(--primary);
+        }
+        
+        .folder-item i {
+            font-size: 1.1em;
+        }
+        
+        /* Отзывы */
+        .testimonials {
+            margin: 60px 0;
+        }
+        
+        .testimonial-card {
+            background: var(--surface);
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid var(--surface-border);
+            margin: 25px 0;
+            position: relative;
+            box-shadow: var(--shadow-2);
+        }
+        
+        .testimonial-card::before {
+            content: '"';
+            font-size: 5em;
+            color: var(--primary);
+            opacity: 0.15;
+            position: absolute;
+            top: 15px;
+            left: 25px;
+            font-family: serif;
+        }
+        
+        .testimonial-card p {
+            color: var(--text);
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin: 0 0 20px 0;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .testimonial-card div {
+            font-weight: bold;
+            color: var(--text);
+            margin-top: 20px;
+        }
+        
+        /* Форма входа */
+        .login-card {
+            max-width: 500px;
+            margin: 40px auto;
+            transition: transform 0.3s ease;
+            background: var(--surface);
+            padding: 32px;
+            border-radius: 16px;
+            border: 1px solid var(--surface-border);
+            box-shadow: var(--shadow-3);
+        }
+        
+        .login-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 16px 0;
+        }
+        
+        .field label {
+            color: var(--text);
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .field input, .field select {
+            padding: 14px 18px;
+            border: 1px solid var(--surface-border);
+            border-radius: 12px;
+            background: var(--surface-2);
+            color: var(--text);
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        .field input:focus, .field select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: var(--focus);
+        }
+        
+        .btn-large {
+            padding: 16px 32px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 12px;
+            background: var(--primary);
+            color: var(--primary-ink);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn-large:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+        
+        /* Анимации */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .hero {
+                padding: 80px 0 40px;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero .lead {
+                font-size: 1.1em;
+            }
+            
+            .links {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .links .link {
+                width: 100%;
+                text-align: center;
+                max-width: 250px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            h2.section-title {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero {
+                padding: 60px 0 30px;
+            }
+            
+            .hero .logo {
+                height: 60px;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .btn-hero-primary,
+            .btn-hero-secondary {
+                padding: 14px 16px;
+                font-size: 16px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .testimonial-card {
+                padding: 20px;
+            }
+            
+            .testimonial-card p {
+                font-size: 1em;
+            }
+        }
+    </style>
 </head>
 <body>
-  <!-- Шапка -->
-  <div data-include="/components/header.html"></div>
+    <main class="container">
+        <!-- Hero -->
+        <section class="hero">
+            <img src="images/logo.svg" alt="Логотип Bloggers.tools" class="logo" />
+            <h1>Находите идеальных блогеров и создавайте viral-контент</h1>
+            <p class="lead">Платформа для collaboration с AI-ассистентом, который усиливает вашу креативность</p>
 
-  <main class="page">
-    <h1 style="margin:0 0 16px;">Поиск блогеров</h1>
+            <!-- Блок с двумя кнопками подбора -->
+            <div class="hero-cta">
+                <a class="btn-hero-primary" href="/agency.html">Подобрать через фильтры</a>
+                <a class="btn-hero-secondary" href="/ai-pick.html">Подобрать через ИИ (популярное)</a>
+            </div>
+            
+            <div class="hero-preview" onclick="location.href='/agency.html';" style="cursor: pointer;">
+                <strong>Превью каталога</strong>
+                <p>Нажмите чтобы открыть полный каталог блогеров</p>
+            </div>
 
-    <section class="filters">
-      <!-- ========== 1. Платформа и статистика ============================ -->
-      <div class="section">
-        <div class="section__title"><i></i>Платформа и статистика</div>
+            <div class="links">
+                <a class="link" href="deal/index.html#/1-pick">🔍 Подбор блогеров</a>
+                <a class="link" href="emails.html">✉️ Шаблоны писем</a>
+                <a class="link" href="creator.html?id=1">👤 Анкета блогера</a>
+                <a class="link" href="#features">⭐ Возможности</a>
+                <a class="link" href="#stats">📊 Статистика</a>
+                <a class="link" href="#showcase">👥 Примеры блогеров</a>
+            </div>
+        </section>
 
-        <div class="row">
-          <div class="ctrl ctrl--4">
-            <label class="label">Платформа</label>
+        <!-- Ключевые возможности -->
+        <section id="features" class="fade-in">
+            <h2 class="section-title">Почему выбирают Bloggers.tools?</h2>
+
+            <div class="features-grid">
+                <div class="feature-card fade-in">
+                    <span class="feature-icon">🔍</span>
+                    <h3>AI-поиск блогеров</h3>
+                    <p>Умный подбор по тематике, аудитории и эффективности. Находите идеальные match для вашего бренда.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <span class="feature-icon">🤖</span>
+                    <h3>ИИ-ассистент</h3>
+                    <p>Улучшайте брифинги, генерируйте идеи и анализируйте контент. Креативность + технологии.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <span class="feature-icon">⚡</span>
+                    <h3>Автоматизация</h3>
+                    <p>Рассылки, договоры, оплата — всё в одном workflow. Экономьте время на рутине.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <span class="feature-icon">📊</span>
+                    <h3>Глубокая аналитика</h3>
+                    <p>ER, демография, рост аудитории. Принимайте решения на основе данных, а не догадок.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <span class="feature-icon">🛡️</span>
+                    <h3>Безопасные сделки</h3>
+                    <p>Escrow-оплата, электронные договоры. Работайте с уверенностью и защитой.</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <span class="feature-icon">💬</span>
+                    <h3>Встроенный чат</h3>
+                    <p>Общайтесь с блогерами прямо в платформе. Все переговоры в одном месте.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Статистика -->
+        <section id="stats" class="stats-section fade-in">
+            <div class="container">
+                <h2 class="section-title">Нас выбирают</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-number">500+</div>
+                        <div class="stat-label">активных блогеров</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">120+</div>
+                        <div class="stat-label">довольных брендов</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">85%</div>
+                        <div class="stat-label">успешных сделок</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">поддержка</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Демо блогеров с системой папок -->
+        <section id="showcase" class="bloggers-showcase fade-in">
+            <h2 class="section-title">Популярные блогеры в системе</h2>
+            <div class="showcase-grid">
+                <div class="blogger-demo-card">
+                    <div class="blogger-demo-header">
+                        <div class="blogger-demo-avatar">IP</div>
+                        <div class="blogger-demo-info">
+                            <h4>Иван Петров</h4>
+                            <div class="blogger-demo-stats">YouTube · 125K · Техника</div>
+                        </div>
+                    </div>
+                    <p>Специализируется на обзорах гаджетов и техники. Высокий engagement rate.</p>
+                    <div class="blogger-demo-actions">
+                        <button class="btn-icon toggle-favorite" data-blogger-id="1" title="В избранное">☆</button>
+                        <button class="btn-icon add-to-folder-btn" data-blogger-id="1" title="Добавить в папку">📁</button>
+                        <a href="creator.html?id=1" class="btn-icon" title="Открыть анкету">📋</a>
+                        
+                        <div class="folder-menu" id="folder-menu-1">
+                            <div class="folder-item" data-folder-id="1"><i>📁</i> Избранное</div>
+                            <div class="folder-item" data-folder-id="2"><i>📁</i> Для сотрудничества</div>
+                            <div class="folder-item" data-folder-id="3"><i>📁</i> Рассмотреть позже</div>
+                            <div class="folder-item" data-folder-id="4"><i>➕</i> Новая папка</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="blogger-demo-card">
+                    <div class="blogger-demo-header">
+                        <div class="blogger-demo-avatar">АС</div>
+                        <div class="blogger-demo-info">
+                            <h4>Анна Сидорова</h4>
+                            <div class="blogger-demo-stats">Instagram · 87K · Красота</div>
+                        </div>
+                    </div>
+                    <p>Эксперт в beauty-индустрии. Создает качественный контент о косметике.</p>
+                    <div class="blogger-demo-actions">
+                        <button class="btn-icon toggle-favorite" data-blogger-id="2" title="В избранное">☆</button>
+                        <button class="btn-icon add-to-folder-btn" data-blogger-id="2" title="Добавить в папку">📁</button>
+                        <a href="creator.html?id=2" class="btn-icon" title="Открыть анкету">📋</a>
+                        
+                        <div class="folder-menu" id="folder-menu-2">
+                            <div class="folder-item" data-folder-id="1"><i>📁</i> Избранное</div>
+                            <div class="folder-item" data-folder-id="2"><i>📁</i> Для сотрудничества</div>
+                            <div class="folder-item" data-folder-id="3"><i>📁</i> Рассмотреть позже</div>
+                            <div class="folder-item" data-folder-id="4"><i>➕</i> Новая папку</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="blogger-demo-card">
+                    <div class="blogger-demo-header">
+                        <div class="blogger-demo-avatar">СК</div>
+                        <div class="blogger-demo-info">
+                            <h4>Сергей Козлов</h4>
+                            <div class="blogger-demo-stats">YouTube · 356K · Игры</div>
+                        </div>
+                    </div>
+                    <p>Ведущий гейминг-канала. Обзоры игр и игрового оборудования.</p>
+                    <div class="blogger-demo-actions">
+                        <button class="btn-icon toggle-favorite" data-blogger-id="3" title="В избранное">☆</button>
+                        <button class="btn-icon add-to-folder-btn" data-blogger-id="3" title="Добавить в папку">📁</button>
+                        <a href="creator.html?id=3" class="btn-icon" title="Открыть анкету">📋</a>
+                        
+                        <div class="folder-menu" id="folder-menu-3">
+                            <div class="folder-item" data-folder-id="1"><i>📁</i> Избранное</div>
+                            <div class="folder-item" data-folder-id="2"><i>📁</i> Для сотрудничества</div>
+                            <div class="folder-item" data-folder-id="3"><i>📁</i> Рассмотреть позже</div>
+                            <div class="folder-item" data-folder-id="4"><i>➕</i> Новая папка</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Отзывы -->
+        <section class="testimonials fade-in">
+            <h2 class="section-title">Что говорят наши клиенты</h2>
+            <div class="testimonial-card">
+                <p>"С помощью Bloggers.tools мы сократили время поиска подходящих блогеров на 70%. AI-подбор действительно работает!"</p>
+                <div>— Маркетинговое агентство "Пиксель"</div>
+            </div>
+            <div class="testimonial-card">
+                <p>"Платформа значительно упростила работу с договорами и оплатами. Теперь всё автоматизировано и прозрачно."</p>
+                <div>— Бренд одежды "UrbanStyle"</div>
+            </div>
+            <div class="testimonial-card">
+                <p>"Как блогер, я ценю удобность коммуникации с брендами и гарантированные выплаты. Отличная платформа!"</p>
+                <div>— @travel_with_me, 250K подписчиков</div>
+            </div>
+        </section>
+
+        <!-- Форма входа -->
+        <section class="login-card fade-in">
+            <h2 style="text-align: center; color: var(--text);">Начните прямо сейчас</h2>
             <div class="field">
-              <select>
-                <option>Все платформы</option>
-                <option>YouTube</option>
-                <option>Instagram</option>
-                <option>TikTok</option>
-              </select>
+                <label for="loginName">Имя / Компания</label>
+                <input id="loginName" type="text" placeholder="Иван / Demo Agency" />
             </div>
-          </div>
-
-          <div class="ctrl ctrl--4">
-            <label class="label">Подписчики</label>
-            <div class="field range">
-              <input type="number" placeholder="от" />
-              <span class="sep">—</span>
-              <input type="number" placeholder="до" />
-              <span class="suffix">тыс</span>
-            </div>
-          </div>
-
-          <div class="ctrl ctrl--4">
-            <label class="label">Ср. просмотры</label>
             <div class="field">
-              <input type="number" placeholder="от" />
+                <label for="loginRole">Роль</label>
+                <select id="loginRole">
+                    <option value="agency">Агентство/бренд</option>
+                    <option value="blogger">Блогер</option>
+                </select>
             </div>
-          </div>
-        </div>
+            <button id="loginBtn" class="btn-large" type="button">Продолжить</button>
 
-        <div class="row">
-          <div class="ctrl ctrl--4">
-            <label class="label">Рост подписчиков</label>
-            <div class="field">
-              <select>
-                <option>Любой</option>
-                <option>Растёт</option>
-                <option>Падает</option>
-              </select>
+            <div style="text-align: center; margin-top: 25px;">
+                <p style="color: var(--text-muted);">Или перейдите сразу к <a href="deal/index.html#/1-pick" style="color: var(--primary); text-decoration: none; font-weight: 600;">подбору блогеров →</a></p>
             </div>
-          </div>
+        </section>
+    </main>
 
-          <div class="ctrl ctrl--4">
-            <label class="label">Последний пост</label>
-            <div class="field">
-              <select>
-                <option>Не важно</option>
-                <option>За 7 дней</option>
-                <option>За 30 дней</option>
-                <option>За 90 дней</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
+    <script>
+        (function(){
+            // Предотвращаем автоматическую прокрутку при загрузке
+            if (location.hash) {
+                setTimeout(function() {
+                    window.scrollTo(0, 0);
+                }, 1);
+            }
 
-      <!-- ========== 2. Блогер =========================================== -->
-      <div class="section">
-        <div class="section__title"><i></i>Блогер</div>
+            // Логика входа
+            const loginBtn = document.getElementById('loginBtn');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', () => {
+                    const name = (document.getElementById('loginName').value || 'Demo').trim();
+                    const role = document.getElementById('loginRole').value;
+                    if (role === 'agency') {
+                        localStorage.setItem('userName', name);
+                        localStorage.setItem('userRole', 'agency');
+                    } else {
+                        localStorage.setItem('bloggerName', name);
+                        localStorage.setItem('userRole', 'blogger');
+                    }
+                    loginBtn.textContent = 'Переходим...';
+                    loginBtn.disabled = true;
+                    setTimeout(() => {
+                        location.href = role === 'agency' ? 'agency.html' : 'blogger.html';
+                    }, 800);
+                });
+            }
 
-        <div class="row">
-          <div class="ctrl ctrl--3">
-            <label class="label">Пол блогера</label>
-            <div class="field">
-              <select>
-                <option>Любой</option><option>Мужчина</option><option>Женщина</option>
-              </select>
-            </div>
-          </div>
+            // Анимация появления
+            function animateOnScroll() {
+                document.querySelectorAll('.fade-in').forEach(el => {
+                    const r = el.getBoundingClientRect();
+                    if (r.top < window.innerHeight - 100) el.classList.add('visible');
+                });
+            }
+            
+            // Используем DOMContentLoaded для инициализации
+            document.addEventListener("DOMContentLoaded", function() {
+                // Прокручиваем наверх при загрузке
+                window.scrollTo(0, 0);
+                
+                window.addEventListener('scroll', animateOnScroll);
+                animateOnScroll();
 
-          <div class="ctrl ctrl--3">
-            <label class="label">Возраст блогера</label>
-            <div class="field">
-              <select>
-                <option>Любой</option>
-                <option>18–24</option><option>25–34</option>
-                <option>35–44</option><option>45+</option>
-              </select>
-            </div>
-          </div>
+                // Быстрый доступ
+                document.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' && document.getElementById('loginName') === document.activeElement) {
+                        document.getElementById('loginBtn').click();
+                    }
+                });
 
-          <div class="ctrl ctrl--3">
-            <label class="label">Язык блогера</label>
-            <div class="field">
-              <select>
-                <option>Любой</option><option>Русский</option><option>Английский</option>
-              </select>
-            </div>
-          </div>
+                // Автофокус
+                const ln = document.getElementById('loginName');
+                if (ln) setTimeout(() => ln.focus(), 500);
 
-          <div class="ctrl ctrl--3">
-            <label class="label">Страна блогера</label>
-            <div class="field">
-              <select>
-                <option>Любая</option><option>Россия</option><option>США</option><option>Украина</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ========== 3. Аудитория ======================================== -->
-      <div class="section">
-        <div class="section__title"><i></i>Аудитория</div>
-
-        <div class="row">
-          <div class="ctrl ctrl--4">
-            <label class="label">Пол аудитории</label>
-            <div class="field">
-              <select>
-                <option>Любой</option><option>Мужчины</option><option>Женщины</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="ctrl ctrl--4">
-            <label class="label">Возраст аудитории</label>
-            <div class="field">
-              <select>
-                <option>Любой</option>
-                <option>13–17</option><option>18–24</option>
-                <option>25–34</option><option>35–44</option><option>45+</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="ctrl ctrl--4">
-            <label class="label">Страна аудитории</label>
-            <div class="field">
-              <select>
-                <option>Любая</option><option>Россия</option><option>США</option><option>Бразилия</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="ctrl ctrl--4">
-            <label class="label">Язык аудитории</label>
-            <div class="field">
-              <select>
-                <option>Любой</option><option>Русский</option><option>Английский</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ========== 4. Контент и контакты =============================== -->
-      <div class="section">
-        <div class="section__title"><i></i>Контент и контакты</div>
-
-        <div class="row">
-          <div class="ctrl ctrl--6">
-            <label class="label">Поиск по ключевым словам</label>
-            <div class="field">
-              <input type="text" placeholder="темы, ключевые слова" />
-            </div>
-          </div>
-
-          <div class="ctrl ctrl--4">
-            <label class="label">Поиск по bio</label>
-            <div class="field">
-              <input type="text" placeholder="слова из описания" />
-            </div>
-          </div>
-
-          <div class="ctrl ctrl--2">
-            <label class="label">Есть контакт</label>
-            <div class="field">
-              <select>
-                <option>Любой контакт</option>
-                <option>Почта</option>
-                <option>Телеграм</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- «Только верифицированные» — компактный чекбокс -->
-        <div class="row">
-          <div class="ctrl ctrl--4">
-            <label class="label">&nbsp;</label>
-            <label class="checkbox">
-              <input type="checkbox" />
-              <span>Только верифицированные</span>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <!-- ========== 5. Похожие блогеры ================================== -->
-      <div class="section">
-        <div class="section__title"><i></i>Похожие блогеры</div>
-        <div class="row">
-          <div class="ctrl ctrl--4">
-            <label class="label">Похожие на</label>
-            <div class="field">
-              <select>
-                <option>Не выбрано</option>
-                <option>@mrbeast</option>
-                <option>@kylie</option>
-                <option>@spencerx</option>
-              </select>
-            </div>
-            <div class="hint">Выберите аккаунт, чтобы найти lookalike-профили.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ========== 6. Сортировка — ПОД БЛОКОМ «Похожие блогеры» ========= -->
-      <div class="sort">
-        <div class="sort__label">Сортировка:</div>
-        <div class="segmented" role="tablist" aria-label="Сортировка">
-          <input type="radio" id="sort-followers" name="sort" checked />
-          <label for="sort-followers">Подписчики</label>
-
-          <input type="radio" id="sort-views" name="sort" />
-          <label for="sort-views">Просмотры</label>
-
-          <input type="radio" id="sort-er" name="sort" />
-          <label for="sort-er">ER</label>
-
-          <input type="radio" id="sort-rel" name="sort" />
-          <label for="sort-rel">Релевантность</label>
-        </div>
-
-        <button class="clear-all" type="button">Очистить всё</button>
-      </div>
-      <!-- /Сортировка -->
-    </section>
-  </main>
-
-  <!-- Футер -->
-  <div data-include="/components/footer.html"></div>
+                // Логика для кнопок избранного
+                document.querySelectorAll('.toggle-favorite').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        this.classList.toggle('active');
+                        const bloggerId = this.getAttribute('data-blogger-id');
+                        const isActive = this.classList.contains('active');
+                        
+                        // Сохраняем состояние в localStorage
+                        const favorites = JSON.parse(localStorage.getItem('favoriteBloggers') || '{}');
+                        favorites[bloggerId] = isActive;
+                        localStorage.setItem('favoriteBloggers', JSON.stringify(favorites));
+                        
+                        this.title = isActive ? 'Удалить из избранного' : 'В избранное';
+                        this.innerHTML = isActive ? '★' : '☆';
+                    });
+                });
+                
+                // Логика для кнопок добавления в папку
+                document.querySelectorAll('.add-to-folder-btn').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const bloggerId = this.getAttribute('data-blogger-id');
+                        const menu = document.getElementById(`folder-menu-${bloggerId}`);
+                        
+                        // Закрываем все открытые меню
+                        document.querySelectorAll('.folder-menu').forEach(m => {
+                            if (m !== menu) m.classList.remove('show');
+                        });
+                        
+                        // Переключаем текущее меню
+                        menu.classList.toggle('show');
+                    });
+                });
+                
+                // Закрытие меню при клике вне его
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.folder-menu') && !e.target.closest('.add-to-folder-btn')) {
+                        document.querySelectorAll('.folder-menu').forEach(menu => {
+                            menu.classList.remove('show');
+                        });
+                    }
+                });
+                
+                // Обработка выбора папки
+                document.querySelectorAll('.folder-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const folderId = this.getAttribute('data-folder-id');
+                        const menu = this.closest('.folder-menu');
+                        const bloggerId = menu.id.split('-')[2];
+                        
+                        // Логика добавления в папку
+                        console.log(`Блогер ${bloggerId} добавлен в папку ${folderId}`);
+                        
+                        // Закрываем меню
+                        menu.classList.remove('show');
+                        
+                        // Показываем уведомление
+                        alert('Блогер успешно добавлен в папку!');
+                    });
+                });
+                
+                // Восстанавливаем состояние избранного
+                const favorites = JSON.parse(localStorage.getItem('favoriteBloggers') || '{}');
+                Object.keys(favorites).forEach(bloggerId => {
+                    if (favorites[bloggerId]) {
+                        const btn = document.querySelector(`.toggle-favorite[data-blogger-id="${bloggerId}"]`);
+                        if (btn) {
+                            btn.classList.add('active');
+                            btn.title = 'Удалить из избранного';
+                            btn.innerHTML = '★';
+                        }
+                    }
+                });
+            });
+        })();
+    </script>
 </body>
 </html>
