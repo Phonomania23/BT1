@@ -34,6 +34,11 @@
 
   <!-- Локальные стили для главной -->
   <style>
+    /* Общие стили */
+    body {
+      scroll-behavior: smooth;
+    }
+    
     .hero { 
       text-align: center; 
       padding: 60px 0 30px;
@@ -181,6 +186,33 @@
     .blogger-demo-stats { color: var(--text-muted); font-size: 0.9em; }
     .blogger-demo-actions { display: flex; gap: 8px; margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--surface-border); }
 
+    /* Стили для иконок действий */
+    .btn-icon {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.2em;
+      padding: 5px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    
+    .toggle-favorite {
+      color: #888;
+    }
+    
+    .toggle-favorite.active {
+      color: #8A2BE2; /* Фиолетовый цвет для избранного */
+    }
+    
+    .add-to-folder-btn {
+      color: #888;
+    }
+    
+    .add-to-folder-btn:hover {
+      color: #8A2BE2;
+    }
+
     /* «Страховка» для фиксированной шапки: включается только если .site-header реально position: fixed */
     body.has-fixed-header { padding-top: 84px; }
     @media (max-width: 640px) { 
@@ -191,6 +223,15 @@
       .hero-features {
         flex-direction: column;
         align-items: center;
+      }
+      .links {
+        flex-direction: column;
+        align-items: center;
+      }
+      .links .link {
+        width: 100%;
+        text-align: center;
+        max-width: 250px;
       }
     }
   </style>
@@ -214,9 +255,7 @@
       </div>
       
       <div class="hero-features">
-        <a href="#features" class="hero-feature-badge">ER, аудитория, гео</a>
         <a href="creator.html?id=1" class="hero-feature-badge">Анкета блогера</a>
-        <a href="/agency.html#folders" class="hero-feature-badge">Списки и заметки</a>
       </div>
       
       <div class="hero-preview" onclick="location.href='/agency.html';" style="cursor: pointer;">
@@ -301,7 +340,7 @@
       </div>
     </section>
 
-    <!-- Демо блогеров с системаой папок -->
+    <!-- Демо блогеров с системой папок -->
     <section id="showcase" class="bloggers-showcase fade-in">
       <h2 class="section-title">Популярные блогеры в системе</h2>
       <div class="showcase-grid">
@@ -316,7 +355,6 @@
           <p>Специализируется на обзорах гаджетов и техники. Высокий engagement rate.</p>
           <div class="blogger-demo-actions">
             <button class="btn-icon toggle-favorite" data-blogger-id="1" title="В избранное">☆</button>
-            <button class="btn-icon add-to-folder-btn" data-blogger-id="1" title="Добавить в папку">📁</button>
             <a href="creator.html?id=1" class="btn-icon" title="Открыть анкету">📋</a>
           </div>
         </div>
@@ -332,7 +370,6 @@
           <p>Эксперт в beauty-индустрии. Создает качественный контент о косметике.</p>
           <div class="blogger-demo-actions">
             <button class="btn-icon toggle-favorite" data-blogger-id="2" title="В избранное">☆</button>
-            <button class="btn-icon add-to-folder-btn" data-blogger-id="2" title="Добавить в папку">📁</button>
             <a href="creator.html?id=2" class="btn-icon" title="Открыть анкету">📋</a>
           </div>
         </div>
@@ -348,7 +385,6 @@
           <p>Ведущий гейминг-канала. Обзоры игр и игрового оборудования.</p>
           <div class="blogger-demo-actions">
             <button class="btn-icon toggle-favorite" data-blogger-id="3" title="В избранное">☆</button>
-            <button class="btn-icon add-to-folder-btn" data-blogger-id="3" title="Добавить в папку">📁</button>
             <a href="creator.html?id=3" class="btn-icon" title="Открыть анкету">📋</a>
           </div>
         </div>
@@ -400,6 +436,13 @@
   <!-- Локальная логика страницы -->
   <script>
     (function(){
+      // Предотвращаем автоматическую прокрутку при загрузке
+      if (location.hash) {
+        setTimeout(function() {
+          window.scrollTo(0, 0);
+        }, 1);
+      }
+
       // Логика входа
       const loginBtn = document.getElementById('loginBtn');
       if (loginBtn) {
@@ -431,6 +474,9 @@
       
       // Используем DOMContentLoaded для инициализации
       document.addEventListener("DOMContentLoaded", function() {
+        // Прокручиваем наверх при загрузке
+        window.scrollTo(0, 0);
+        
         window.addEventListener('scroll', animateOnScroll);
         animateOnScroll();
 
@@ -444,6 +490,35 @@
         // Автофокус
         const ln = document.getElementById('loginName');
         if (ln) setTimeout(() => ln.focus(), 500);
+
+        // Логика для кнопок избранного
+        document.querySelectorAll('.toggle-favorite').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            this.classList.toggle('active');
+            const bloggerId = this.getAttribute('data-blogger-id');
+            const isActive = this.classList.contains('active');
+            
+            // Сохраняем состояние в localStorage
+            const favorites = JSON.parse(localStorage.getItem('favoriteBloggers') || '{}');
+            favorites[bloggerId] = isActive;
+            localStorage.setItem('favoriteBloggers', JSON.stringify(favorites));
+            
+            this.title = isActive ? 'Удалить из избранного' : 'В избранное';
+          });
+        });
+        
+        // Восстанавливаем состояние избранного
+        const favorites = JSON.parse(localStorage.getItem('favoriteBloggers') || '{}');
+        Object.keys(favorites).forEach(bloggerId => {
+          if (favorites[bloggerId]) {
+            const btn = document.querySelector(`.toggle-favorite[data-blogger-id="${bloggerId}"]`);
+            if (btn) {
+              btn.classList.add('active');
+              btn.title = 'Удалить из избранного';
+            }
+          }
+        });
 
         // Демо-карточки: подключаем экшены из cards.js, если доступно
         function initDemoBloggers() {
