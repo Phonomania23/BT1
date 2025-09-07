@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bloggers.tools — Платформа для collaboration брендов и блогеров</title>
+    <!-- Подключаем стили для компонентов -->
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <!-- Скрипт для включения компонентов -->
+    <script defer src="js/include.js"></script>
     <style>
         /* Базовые сбросы стилей */
         * {
@@ -606,8 +611,12 @@
     </style>
 </head>
 <body>
+    <!-- Включаем компоненты верхнего меню -->
+    <div data-include="components/header.html"></div>
+    <div data-include="components/nav.html"></div>
+
     <main class="container">
-        <!-- Hero -->
+        <!-- Герой -->
         <section class="hero">
             <img src="images/logo.svg" alt="Логотип Bloggers.tools" class="logo" />
             <h1>Находите идеальных блогеров и создавайте viral-контент</h1>
@@ -747,7 +756,7 @@
                             <div class="folder-item" data-folder-id="1"><i>📁</i> Избранное</div>
                             <div class="folder-item" data-folder-id="2"><i>📁</i> Для сотрудничества</div>
                             <div class="folder-item" data-folder-id="3"><i>📁</i> Рассмотреть позже</div>
-                            <div class="folder-item" data-folder-id="4"><i>➕</i> Новая папка</div>
+                            <div class="folder-item" data-folder-id="4"><i>➕</i> Новая папку</div>
                         </div>
                     </div>
                 </div>
