@@ -1,15 +1,27 @@
-// Подставляет HTML-фрагменты из /components/*.html в элементы с data-include
-(async () => {
-  const slots = document.querySelectorAll("[data-include]");
-  await Promise.all(
-    [...slots].map(async (el) => {
-      const url = el.getAttribute("data-include");
+document.addEventListener('DOMContentLoaded', async () => {
+  const blocks = document.querySelectorAll('[data-include]');
+  for (const host of blocks) {
+    const src = host.getAttribute('data-include');
+    // Кандидаты путей: как есть, без начального слэша, и с подъемом на уровень выше для внутренних страниц
+    const candidates = [src];
+
+    if (src.startsWith('/')) candidates.push(src.slice(1));              // убрать ведущий /
+    if (src.startsWith('/components/')) candidates.push('../' + src.slice(1)); // ../components/...
+
+    let done = false;
+    for (const url of candidates) {
       try {
-        const res = await fetch(url, { cache: "no-store" });
-        el.outerHTML = await res.text();
-      } catch (e) {
-        console.error("Include failed:", url, e);
-      }
-    })
-  );
-})();
+        const res = await fetch(url, { cache: 'no-store' });
+        if (res.ok) {
+          host.innerHTML = await res.text();
+          done = true;
+          break;
+        }
+      } catch (e) {}
+    }
+    if (!done) {
+      console.warn('Include not found:', src);
+      host.innerHTML = `<!-- include not found: ${src} -->`;
+    }
+  }
+});
